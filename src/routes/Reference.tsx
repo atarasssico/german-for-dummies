@@ -5,10 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { GenderChip, GenderKey, Rail } from '@/components/Rail'
 import { LedgerHead } from '@/components/Ledger'
 import { PrincipalParts } from '@/routes/Paradigm'
+import { KasusPill, VerbFramesInline, pillsOf } from '@/components/VerbFrames'
 import { NOUNS, noun as nounById } from '@/data/nouns'
 import { PREPOSITIONS, PREP_GROUP_LABEL } from '@/data/prepositions'
 import type { PrepGroup } from '@/data/prepositions'
-import { POSITION_PAIRS, PATTERN_LABEL, VALENCY } from '@/data/valency'
+import { POSITION_PAIRS, VALENCY } from '@/data/valency'
 import type { Valency } from '@/data/valency'
 import { VERBS } from '@/data/verbs'
 import type { Gender, Kasus, Numerus, Slot } from '@/engine/grammar'
@@ -426,13 +427,20 @@ function VerbList() {
           <li key={verb.id} className="border-b border-rule">
             <Link
               to={`/paradigma/${verb.id}`}
-              className="group flex min-h-[56px] items-baseline gap-3 py-3 transition-colors hover:bg-secondary/60"
+              className="group flex min-h-[56px] items-start gap-3 py-3 transition-colors hover:bg-secondary/60"
             >
-              <span className="de min-w-0 flex-[1.1] text-[19px]">{verb.infinitive}</span>
-              <span className="hidden flex-1 text-[16px] text-foreground-soft sm:block">{verb.en}</span>
-              <PrincipalParts verb={verb} />
+              <span className="flex min-w-0 flex-1 flex-col gap-1.5">
+                <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span className="de text-[19px] font-semibold" lang="de">
+                    {verb.infinitive}
+                  </span>
+                  <span className="text-[16px] text-foreground-soft">{verb.en}</span>
+                </span>
+                <PrincipalParts verb={verb} className="block" />
+                <VerbFramesInline infinitive={verb.infinitive} />
+              </span>
               <ChevronRight
-                className="size-4 shrink-0 self-center text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
                 aria-hidden
               />
             </Link>
@@ -562,14 +570,6 @@ function PrepositionList() {
 
 /* ---------------------------------------------------------- valency list */
 
-function frameText(frame: Valency['frames'][number]): string {
-  if (frame.pattern === 'prep' && frame.prep && frame.prepCase) {
-    return `${frame.prep} + ${KASUS_LABEL[frame.prepCase]}`
-  }
-  return PATTERN_LABEL[frame.pattern]
-}
-
-/** The case a frame governs, for colouring. Multi-case frames take the first. */
 function frameKasus(frame: Valency['frames'][number]): Kasus | null {
   if (frame.prepCase) return frame.prepCase
   if (frame.pattern.startsWith('dat')) return 'dat'
@@ -589,22 +589,19 @@ function ValencyRow({ entry }: { entry: Valency }) {
         {entry.frames.map((frame, i) => (
           <li
             key={i}
-            className="flex flex-col gap-0.5 border-l-[5px] pl-3"
+            className="flex flex-col gap-1.5 border-l-[5px] p-3"
             style={{
               borderColor: frameKasus(frame) ? KASUS_VAR[frameKasus(frame) as Kasus] : 'var(--rule)',
-              background: frameKasus(frame) ? kasusTint(frameKasus(frame) as Kasus, 15) : undefined,
+              background: frameKasus(frame) ? kasusTint(frameKasus(frame) as Kasus, 14) : undefined,
             }}
           >
-            <span className="flex flex-wrap items-baseline gap-x-2">
-              <span
-                className="text-[16px] font-semibold"
-                style={frameKasus(frame) ? { color: KASUS_VAR[frameKasus(frame) as Kasus] } : undefined}
-              >
-                {frameText(frame)}
-              </span>
+            <span className="flex flex-wrap items-center gap-1.5">
+              {pillsOf(frame).map((pill) => (
+                <KasusPill key={pill.label} pill={pill} />
+              ))}
               {frame.sense && <span className="text-[16px] text-foreground-soft">{frame.sense}</span>}
             </span>
-            <span className="de text-[17px]">{frame.example.de}</span>
+            <span className="de text-[17px]" lang="de">{frame.example.de}</span>
             <span className="text-[16px] italic text-foreground-soft">{frame.example.en}</span>
           </li>
         ))}
@@ -618,7 +615,7 @@ function ValencyList() {
   const { settings } = useProgress()
   const allowed = VALENCY.filter((v) => withinLevel(v.level, settings.level))
 
-  const sections: Array<{ label: string; blurb?: string; items: Valency[] }> = [
+  const sections: Array<{ label: string; blurb?: string; kasus?: Kasus; items: Valency[] }> = [
     {
       label: 'Bedeutung ändert sich',
       blurb: 'Same verb, different frame, different meaning.',
@@ -626,14 +623,17 @@ function ValencyList() {
     },
     {
       label: 'Nur Dativ',
+      kasus: 'dat' as Kasus,
       items: allowed.filter((v) => v.frames.length === 1 && v.frames[0]?.pattern === 'dat'),
     },
     {
       label: 'Dativ + Akkusativ',
+      kasus: 'dat' as Kasus,
       items: allowed.filter((v) => v.frames.length === 1 && v.frames[0]?.pattern === 'dat+akk'),
     },
     {
       label: 'Genitiv',
+      kasus: 'gen' as Kasus,
       items: allowed.filter(
         (v) => v.frames.length === 1 && (v.frames[0]?.pattern === 'gen' || v.frames[0]?.pattern === 'akk+gen'),
       ),
@@ -644,6 +644,7 @@ function ValencyList() {
     },
     {
       label: 'Nur Akkusativ',
+      kasus: 'akk' as Kasus,
       items: allowed.filter(
         (v) => v.frames.length === 1 && (v.frames[0]?.pattern === 'akk' || v.frames[0]?.pattern === 'akk+akk'),
       ),
@@ -654,7 +655,19 @@ function ValencyList() {
     <div className="flex flex-col gap-10">
       {sections.map((section) => (
         <section key={section.label} className="flex flex-col gap-1">
-          <LedgerHead label={section.label} right={`${section.items.length} Verben`} />
+          <LedgerHead
+            label={
+              section.kasus ? (
+                <span className="flex items-center gap-2">
+                  <KasusBar cases={[section.kasus]} className="h-4" />
+                  <span style={{ color: KASUS_VAR[section.kasus] }}>{section.label}</span>
+                </span>
+              ) : (
+                section.label
+              )
+            }
+            right={`${section.items.length} Verben`}
+          />
           {section.blurb && (
             <p className="py-3 text-[16px] leading-snug text-foreground-soft">{section.blurb}</p>
           )}

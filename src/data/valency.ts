@@ -410,3 +410,30 @@ export const POSITION_PAIRS: PositionPair[] = [
     },
   },
 ]
+
+/** Strips the reflexive pronoun so a valency entry can be matched to a verb. */
+function bareInfinitive(verb: string): string {
+  return verb.replace(/^sich\s+/, '').toLowerCase()
+}
+
+const BY_INFINITIVE = new Map<string, Valency[]>()
+for (const entry of VALENCY) {
+  const key = bareInfinitive(entry.verb)
+  const list = BY_INFINITIVE.get(key)
+  if (list) list.push(entry)
+  else BY_INFINITIVE.set(key, [entry])
+}
+
+/**
+ * Every valency entry recorded for an infinitive. A verb can have several:
+ * fragen takes a bare accusative for the person and nach + Dativ for the
+ * thing, and halten has four frames with four meanings.
+ */
+export function valencyFor(infinitive: string): Valency[] {
+  return BY_INFINITIVE.get(bareInfinitive(infinitive)) ?? []
+}
+
+/** Every frame recorded for an infinitive, flattened across its entries. */
+export function framesFor(infinitive: string): Array<Frame & { sense?: string }> {
+  return valencyFor(infinitive).flatMap((entry) => entry.frames)
+}

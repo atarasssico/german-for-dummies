@@ -4,6 +4,7 @@ import { Check, Search, Shuffle, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { LedgerHead } from '@/components/Ledger'
 import { UmlautKeys } from '@/components/UmlautKeys'
+import { VerbFrames } from '@/components/VerbFrames'
 import { VERBS, VERB_BY_ID } from '@/data/verbs'
 import type { PersonKey, Tense, Verb } from '@/engine/conjugate'
 import {
@@ -129,6 +130,8 @@ export function Paradigm() {
           </Link>
         </div>
       </header>
+
+      <VerbFrames infinitive={verb.infinitive} />
 
       <div className="-mx-5 overflow-x-auto px-5">
         <div className="flex gap-1 pb-1" role="tablist" aria-label="Tense">

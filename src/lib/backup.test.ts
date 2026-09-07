@@ -123,3 +123,25 @@ describe('mergeProgress', () => {
     expect(out.totals).toEqual({ answered: 5, correct: 5 })
   })
 })
+
+describe('valency linked to verbs', () => {
+  it('finds every frame recorded for an infinitive', async () => {
+    const { valencyFor, framesFor } = await import('@/data/valency')
+    // halten has four frames with four meanings, which is the point of the feature
+    expect(framesFor('halten')).toHaveLength(4)
+    expect(valencyFor('warten')[0]?.frames[0]).toMatchObject({ prep: 'auf', prepCase: 'akk' })
+    expect(framesFor('helfen')[0]).toMatchObject({ pattern: 'dat' })
+  })
+
+  it('matches a reflexive entry to its plain infinitive', async () => {
+    const { valencyFor } = await import('@/data/valency')
+    // stored as "sich erinnern", the verb record's infinitive is "erinnern"
+    expect(valencyFor('erinnern').length).toBeGreaterThan(0)
+    expect(valencyFor('kümmern')[0]?.frames[0]).toMatchObject({ prep: 'um', prepCase: 'akk' })
+  })
+
+  it('returns nothing for a verb with no valency recorded', async () => {
+    const { valencyFor } = await import('@/data/valency')
+    expect(valencyFor('singen')).toEqual([])
+  })
+})
