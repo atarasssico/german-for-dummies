@@ -17,8 +17,8 @@ import {
   KASUS, KASUS_LABEL, KASUS_QUESTION, adjEnding, determiner, determinerForm, nounForm, nounPhrase,
 } from '@/engine/grammar'
 import { withinLevel } from '@/engine/questions'
-import { GENDER_VAR, genderTint } from '@/lib/gender'
-import { GROUP_KASUS, KASUS_VAR, kasusTint } from '@/lib/kasus'
+import { GENDER_FILL, GENDER_ON, GENDER_VAR, genderTint } from '@/lib/gender'
+import { GROUP_KASUS, KASUS_FILL, KASUS_ON, KASUS_VAR, kasusTint } from '@/lib/kasus'
 import { KasusBar, KasusName } from '@/components/KasusLabel'
 import { useProgress } from '@/store/progress'
 import { cn } from '@/lib/utils'
@@ -113,8 +113,11 @@ function GridTable({
                 scope="col"
                 className="px-2 py-1.5 text-[15px] font-semibold uppercase tracking-[0.08em]"
                 style={
-                  SLOT_HEAD[slot].colour
-                    ? { background: SLOT_HEAD[slot].colour, color: 'var(--background)' }
+                  SLOT_HEAD[slot].gender
+                    ? {
+                        background: GENDER_FILL[SLOT_HEAD[slot].gender as Gender],
+                        color: GENDER_ON[SLOT_HEAD[slot].gender as Gender],
+                      }
                     : { color: 'var(--muted-foreground)' }
                 }
               >
@@ -129,7 +132,7 @@ function GridTable({
               <th
                 scope="row"
                 className="px-2 py-2 align-middle"
-                style={row.kasus ? { background: KASUS_VAR[row.kasus], color: 'var(--background)' } : undefined}
+                style={row.kasus ? { background: KASUS_FILL[row.kasus], color: KASUS_ON[row.kasus] } : undefined}
               >
                 <span className="block text-[16px] font-semibold">{row.head}</span>
                 {row.sub && <span className="block text-[15px] opacity-80">{row.sub}</span>}
@@ -300,7 +303,7 @@ function NounLookup() {
                 <span
                   aria-hidden
                   className="h-6 w-[5px] shrink-0"
-                  style={{ background: GENDER_VAR[n.gender] }}
+                  style={{ background: GENDER_FILL[n.gender] }}
                 />
                 <span className="de flex-1 text-[17px] font-semibold" style={{ color: GENDER_VAR[n.gender] }}>
                   {({ m: 'der', f: 'die', n: 'das' } as Record<Gender, string>)[n.gender]} {n.word}
@@ -346,7 +349,7 @@ function NounLookup() {
                 <th
                   scope="row"
                   className="px-2 py-2 align-middle"
-                  style={{ background: KASUS_VAR[kasus], color: 'var(--background)' }}
+                  style={{ background: KASUS_FILL[kasus], color: KASUS_ON[kasus] }}
                 >
                   <span className="block text-[16px] font-semibold">{KASUS_LABEL[kasus]}</span>
                   <span className="block text-[15px] opacity-80">{KASUS_QUESTION[kasus]}</span>
@@ -544,7 +547,7 @@ function PrepositionList() {
         <ul className="flex flex-col">
           {POSITION_PAIRS.map((pair) => (
             <li key={pair.id} className="grid gap-3 border-b border-rule py-4 sm:grid-cols-2">
-              <div className="flex flex-col gap-1 border-l-[5px] pl-3" style={{ borderColor: KASUS_VAR.dat, background: kasusTint('dat', 18) }}>
+              <div className="flex flex-col gap-1 border-l-[5px] pl-3" style={{ borderColor: KASUS_FILL.dat, background: kasusTint('dat', 18) }}>
                 <span className="eyebrow" style={{ color: KASUS_VAR.dat }}>Wo? · Dativ</span>
                 <span className="de text-[18px]">
                   {pair.stative.verb} <span className="text-foreground-soft">({pair.stative.forms})</span>
@@ -552,7 +555,7 @@ function PrepositionList() {
                 <span className="de text-[17px]">{pair.example.dat.de}</span>
                 <span className="text-[16px] italic text-foreground-soft">{pair.example.dat.en}</span>
               </div>
-              <div className="flex flex-col gap-1 border-l-[5px] pl-3" style={{ borderColor: KASUS_VAR.akk, background: kasusTint('akk', 18) }}>
+              <div className="flex flex-col gap-1 border-l-[5px] pl-3" style={{ borderColor: KASUS_FILL.akk, background: kasusTint('akk', 18) }}>
                 <span className="eyebrow" style={{ color: KASUS_VAR.akk }}>Wohin? · Akkusativ</span>
                 <span className="de text-[18px]">
                   {pair.dynamic.verb} <span className="text-foreground-soft">({pair.dynamic.forms})</span>
@@ -591,7 +594,7 @@ function ValencyRow({ entry }: { entry: Valency }) {
             key={i}
             className="flex flex-col gap-1.5 border-l-[5px] p-3"
             style={{
-              borderColor: frameKasus(frame) ? KASUS_VAR[frameKasus(frame) as Kasus] : 'var(--rule)',
+              borderColor: frameKasus(frame) ? KASUS_FILL[frameKasus(frame) as Kasus] : 'var(--rule)',
               background: frameKasus(frame) ? kasusTint(frameKasus(frame) as Kasus, 14) : undefined,
             }}
           >

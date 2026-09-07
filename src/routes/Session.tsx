@@ -13,8 +13,8 @@ import type { Mode, Question } from '@/engine/questions'
 import { MODES, MODE_LABEL, buildQuestion, poolFor } from '@/engine/questions'
 import { pickSession } from '@/engine/srs'
 import { useProgress } from '@/store/progress'
-import { GENDER_VAR, genderEdge, genderTint } from '@/lib/gender'
-import { KASUS_VAR, kasusTint } from '@/lib/kasus'
+import { GENDER_FILL, GENDER_VAR, genderEdge, genderTint } from '@/lib/gender'
+import { KASUS_FILL, KASUS_ON, KASUS_VAR, kasusTint } from '@/lib/kasus'
 import { KasusBar } from '@/components/KasusLabel'
 import { cn } from '@/lib/utils'
 
@@ -370,7 +370,7 @@ export function Session() {
                     <span
                       aria-hidden
                       className="h-9 w-[5px] shrink-0"
-                      style={{ background: choiceColour(choice.id) ?? 'var(--rule)' }}
+                      style={{ background: choiceFill(choice.id) ?? 'var(--rule)' }}
                     />
                   )}
                   <span className="flex min-w-0 flex-col gap-0.5">
@@ -426,12 +426,20 @@ export function Session() {
                     type="button"
                     onClick={() => setPrepCase(option)}
                     aria-pressed={prepCase === option}
-                    className={cn(
-                      'h-11 border px-4 text-[16px] tracking-wide transition-colors',
+                    style={
                       prepCase === option
-                        ? 'border-rule-strong bg-foreground text-background'
-                        : 'border-rule hover:bg-secondary',
-                    )}
+                        ? {
+                            background: KASUS_FILL[option],
+                            borderColor: KASUS_FILL[option],
+                            color: KASUS_ON[option],
+                          }
+                        : {
+                            background: kasusTint(option, 12),
+                            borderColor: kasusTint(option, 50),
+                            color: KASUS_VAR[option],
+                          }
+                    }
+                    className="h-12 border px-4 text-[16px] font-semibold tracking-wide transition-colors"
                   >
                     {KASUS_LABEL[option]}
                   </button>
@@ -513,6 +521,10 @@ function choiceSurface(id: string): React.CSSProperties | undefined {
 
 function choiceColour(id: string): string | undefined {
   return isGender(id) ? GENDER_VAR[id] : undefined
+}
+
+function choiceFill(id: string): string | undefined {
+  return isGender(id) ? GENDER_FILL[id] : undefined
 }
 
 function formatPrepCase(prep: string, kasus: Kasus | null): string {

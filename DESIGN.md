@@ -41,23 +41,38 @@ border, a strike-through or an icon next to the word FALSCH, and never as a
 pill, so it cannot be mistaken for a case label. Every replacement searched for
 scored worse against the orange or came back near-black.
 
-| Token | Light | Dark | Means |
-| --- | --- | --- | --- |
-| `--kasus-nom` | `#0d5b66` | `#4fb3c4` | Nominativ |
-| `--kasus-akk` | `#94430f` | `#e08a52` | Akkusativ |
-| `--kasus-dat` | `#6f2d91` | `#cb9ae8` | Dativ |
-| `--kasus-gen` | `#4f5c15` | `#b9c95e` | Genitiv |
+Each category carries **three** values, because one value cannot do both jobs
+on a light ground:
 
-**Gender is the secondary system** and only ever colours letters: the article,
-the noun, the rail beside them. So a coloured *word* is gender and a coloured
-*label or surface* is case.
+- **base** the vivid hue, for fills, bars and washes
+- **-on** the text that sits on top of that fill
+- **-ink** a darker cut, for coloured text on the page ground
 
-| Token | Light | Dark | Means |
+The first attempt used one value per category and required it to be legible as
+small text on a 20% wash of itself. That constraint forces low lightness, and
+the light theme came out at mean L38 with the Nominativ teal down at chroma 22,
+which is almost grey. It looked dead next to the dark theme's L70. Splitting the
+roles lifts the light fills to mean L58 and chroma 58, brighter and more
+saturated than the dark theme, while the -ink cut keeps small coloured text
+above 4.5:1.
+
+| Case | Fill (light) | Ink (light) | Dark |
 | --- | --- | --- | --- |
-| `--gender-m` | `#2f62c4` | `#7ba3f5` | der |
-| `--gender-f` | `#c4327a` | `#ef7cb4` | die |
-| `--gender-n` | `#2e7d5b` | `#56be91` | das |
-| `--wrong` | `#8a6110` | `#d8a233` | a correction |
+| Nominativ | `#1f9cb0` | `#0d5b66` | `#4fb3c4` |
+| Akkusativ | `#e07b23` | `#94430f` | `#e08a52` |
+| Dativ | `#9b4fc0` | `#6f2d91` | `#cb9ae8` |
+| Genitiv | `#9aad2e` | `#4f5c15` | `#b9c95e` |
+
+| Gender | Fill (light) | Ink (light) | Dark |
+| --- | --- | --- | --- |
+| der | `#2f62c4` | `#2f62c4` | `#7ba3f5` |
+| die | `#e0479a` | `#c4327a` | `#ef7cb4` |
+| das | `#2f9e70` | `#2e7d5b` | `#56be91` |
+
+The correction amber is `#8a6110` in light and `#d8a233` in dark.
+
+In dark mode base and -ink coincide: a light hue reads on a dark ground whether
+it is a fill or a letter.
 
 Tints are derived from the one base hue with `color-mix` rather than stored as
 extra tokens, so there is a single value to change per category.

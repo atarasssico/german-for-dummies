@@ -30,6 +30,10 @@
     --color-kasus-akk: var(--kasus-akk);
     --color-kasus-dat: var(--kasus-dat);
     --color-kasus-gen: var(--kasus-gen);
+    --color-kasus-nom-ink: var(--kasus-nom-ink);
+    --color-kasus-akk-ink: var(--kasus-akk-ink);
+    --color-kasus-dat-ink: var(--kasus-dat-ink);
+    --color-kasus-gen-ink: var(--kasus-gen-ink);
     --color-gender-m: var(--gender-m);
     --color-gender-f: var(--gender-f);
     --color-gender-n: var(--gender-n);
@@ -119,14 +123,44 @@
      * the noun, the rail beside them. So a coloured word is gender and a
      * coloured label or surface is case, and neither hue has to be read twice.
      */
-    --kasus-nom: #0d5b66;
-    --kasus-akk: #94430f;
-    --kasus-dat: #6f2d91;
-    --kasus-gen: #4f5c15;
+    /*
+     * Each category carries three values, because one value cannot do both
+     * jobs on a light ground. Asking a single colour to be legible as small
+     * text on white forces it dark, and dark is what made the light theme look
+     * dead. So:
+     *   base  the vivid hue, for fills, bars and washes
+     *   -on   the text that sits on top of that fill
+     *   -ink  a darker cut of the same hue, for coloured text on the page ground
+     * In dark mode base and -ink coincide, since a light hue reads on a dark
+     * ground either way.
+     */
+    --kasus-nom: #1f9cb0;
+    --kasus-nom-on: #14171a;
+    --kasus-nom-ink: #0d5b66;
+
+    --kasus-akk: #e07b23;
+    --kasus-akk-on: #14171a;
+    --kasus-akk-ink: #94430f;
+
+    --kasus-dat: #9b4fc0;
+    --kasus-dat-on: #fbfbf9;
+    --kasus-dat-ink: #6f2d91;
+
+    --kasus-gen: #9aad2e;
+    --kasus-gen-on: #14171a;
+    --kasus-gen-ink: #4f5c15;
 
     --gender-m: #2f62c4;
-    --gender-f: #c4327a;
-    --gender-n: #2e7d5b;
+    --gender-m-on: #fbfbf9;
+    --gender-m-ink: #2f62c4;
+
+    --gender-f: #e0479a;
+    --gender-f-on: #14171a;
+    --gender-f-ink: #c4327a;
+
+    --gender-n: #2f9e70;
+    --gender-n-on: #14171a;
+    --gender-n-ink: #2e7d5b;
 
     /* correction */
     --wrong: #8a6110;
@@ -176,13 +210,32 @@
 
     /* desaturated a step: saturated hues vibrate on a dark ground */
     --kasus-nom: #4fb3c4;
+    --kasus-nom-on: #131518;
+    --kasus-nom-ink: #4fb3c4;
+
     --kasus-akk: #e08a52;
+    --kasus-akk-on: #131518;
+    --kasus-akk-ink: #e08a52;
+
     --kasus-dat: #cb9ae8;
+    --kasus-dat-on: #131518;
+    --kasus-dat-ink: #cb9ae8;
+
     --kasus-gen: #b9c95e;
+    --kasus-gen-on: #131518;
+    --kasus-gen-ink: #b9c95e;
 
     --gender-m: #7ba3f5;
+    --gender-m-on: #131518;
+    --gender-m-ink: #7ba3f5;
+
     --gender-f: #ef7cb4;
+    --gender-f-on: #131518;
+    --gender-f-ink: #ef7cb4;
+
     --gender-n: #56be91;
+    --gender-n-on: #131518;
+    --gender-n-ink: #56be91;
 
     --wrong: #d8a233;
     --wrong-soft: #2c2617;

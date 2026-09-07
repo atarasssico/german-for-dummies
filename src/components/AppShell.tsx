@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { BookOpen, Dumbbell, PenLine, Settings2 } from 'lucide-react'
-import { GENDER_VAR } from '@/lib/gender'
+import { GENDER_FILL } from '@/lib/gender'
 import { cn } from '@/lib/utils'
 import type { ReactNode } from 'react'
 
@@ -17,9 +17,9 @@ export function Wordmark({ className }: { className?: string }) {
     <span className={cn('inline-flex flex-col gap-1', className)}>
       <span className="de text-[20px] leading-none tracking-tight">Deutsch</span>
       <span aria-hidden className="flex h-[3px] w-full min-w-[64px]">
-        <span className="flex-1" style={{ background: GENDER_VAR.m }} />
-        <span className="flex-1" style={{ background: GENDER_VAR.f }} />
-        <span className="flex-1" style={{ background: GENDER_VAR.n }} />
+        <span className="flex-1" style={{ background: GENDER_FILL.m }} />
+        <span className="flex-1" style={{ background: GENDER_FILL.f }} />
+        <span className="flex-1" style={{ background: GENDER_FILL.n }} />
       </span>
     </span>
   )

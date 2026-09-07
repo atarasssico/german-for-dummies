@@ -2,7 +2,7 @@ import type { Frame } from '@/data/valency'
 import { PATTERN_LABEL, valencyFor } from '@/data/valency'
 import type { Kasus } from '@/engine/grammar'
 import { KASUS_LABEL } from '@/engine/grammar'
-import { KASUS_VAR, kasusTint } from '@/lib/kasus'
+import { KASUS_FILL, KASUS_ON, kasusTint } from '@/lib/kasus'
 import { cn } from '@/lib/utils'
 
 export interface Pill {
@@ -47,7 +47,7 @@ export function KasusPill({ pill, className }: { pill: Pill; className?: string 
       )}
       style={
         pill.kasus
-          ? { background: KASUS_VAR[pill.kasus], color: 'var(--background)' }
+          ? { background: KASUS_FILL[pill.kasus], color: KASUS_ON[pill.kasus] }
           : { background: 'var(--secondary)', color: 'var(--foreground)' }
       }
     >
@@ -91,7 +91,7 @@ export function VerbFrames({ infinitive, className }: { infinitive: string; clas
                 key={`${entry.id}-${i}`}
                 className="flex flex-col gap-1.5 border-l-[5px] p-3"
                 style={{
-                  borderColor: first ? KASUS_VAR[first] : 'var(--rule)',
+                  borderColor: first ? KASUS_FILL[first] : 'var(--rule)',
                   background: first ? kasusTint(first, 14) : undefined,
                 }}
               >

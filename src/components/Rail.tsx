@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import type { Gender } from '@/engine/grammar'
-import { GENDER_ARTICLE, GENDER_NAME, GENDER_VAR, genderTint } from '@/lib/gender'
+import { GENDER_ARTICLE, GENDER_FILL, GENDER_NAME, GENDER_ON, genderTint } from '@/lib/gender'
 import { cn } from '@/lib/utils'
 
 /**
@@ -24,7 +24,7 @@ export function Rail({
     <div
       className={cn('relative pl-4', className)}
       style={{
-        ['--rail-color' as string]: gender ? GENDER_VAR[gender] : 'var(--rule-strong)',
+        ['--rail-color' as string]: gender ? GENDER_FILL[gender] : 'var(--rule-strong)',
         ...(tint > 0 ? { background: genderTint(gender, tint) } : {}),
       }}
     >
@@ -49,7 +49,7 @@ export function GenderChip({ gender, className }: { gender: Gender; className?: 
         'inline-flex items-center gap-2 px-2.5 py-1 text-[15px] font-semibold uppercase tracking-[0.08em]',
         className,
       )}
-      style={{ background: GENDER_VAR[gender], color: 'var(--background)' }}
+      style={{ background: GENDER_FILL[gender], color: GENDER_ON[gender] }}
     >
       <span>{GENDER_ARTICLE[gender]}</span>
       <span className="opacity-80">{GENDER_NAME[gender]}</span>

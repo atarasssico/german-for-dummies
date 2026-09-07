@@ -1,6 +1,6 @@
 import type { Kasus } from '@/engine/grammar'
 import { KASUS_LABEL } from '@/engine/grammar'
-import { KASUS_VAR } from '@/lib/kasus'
+import { KASUS_FILL, KASUS_VAR } from '@/lib/kasus'
 import { cn } from '@/lib/utils'
 
 /** The case name, always in its own colour. */
@@ -25,7 +25,7 @@ export function KasusBar({ cases, className }: { cases: Kasus[]; className?: str
   return (
     <span aria-hidden className={cn('flex w-[5px] shrink-0 flex-col', className)}>
       {cases.map((kasus) => (
-        <span key={kasus} className="flex-1" style={{ background: KASUS_VAR[kasus] }} />
+        <span key={kasus} className="flex-1" style={{ background: KASUS_FILL[kasus] }} />
       ))}
     </span>
   )

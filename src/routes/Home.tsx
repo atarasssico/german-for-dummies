@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Table2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { GenderKey } from '@/components/Rail'
-import { GENDER_VAR } from '@/lib/gender'
+import { GENDER_FILL } from '@/lib/gender'
 import { LedgerHead } from '@/components/Ledger'
 import { ProgressStrip } from '@/components/ProgressStrip'
 import { MODES, MODE_BLURB, MODE_LABEL, poolFor } from '@/engine/questions'
@@ -103,9 +103,9 @@ export function Home() {
               >
                 {mode === 'articles' ? (
                   <span aria-hidden className="flex h-11 w-[5px] shrink-0 flex-col">
-                    <span className="flex-1" style={{ background: GENDER_VAR.m }} />
-                    <span className="flex-1" style={{ background: GENDER_VAR.f }} />
-                    <span className="flex-1" style={{ background: GENDER_VAR.n }} />
+                    <span className="flex-1" style={{ background: GENDER_FILL.m }} />
+                    <span className="flex-1" style={{ background: GENDER_FILL.f }} />
+                    <span className="flex-1" style={{ background: GENDER_FILL.n }} />
                   </span>
                 ) : (
                   <span
