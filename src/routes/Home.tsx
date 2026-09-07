@@ -72,20 +72,16 @@ export function Home() {
           </div>
         )}
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button asChild size="lg" className="h-12 w-full justify-between px-5 text-[16px] sm:w-auto sm:min-w-[260px]">
-            <Link to={`/ueben/${nextMode}`}>
-              <span>{started ? `Weiter mit ${MODE_LABEL[nextMode]}` : `Anfangen mit ${MODE_LABEL[nextMode]}`}</span>
-              <ArrowRight className="size-4" aria-hidden />
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="lg" className="h-12 w-full justify-between px-5 sm:w-auto">
-            <Link to="/paradigma">
-              <span>Konjugation schreiben</span>
-              <Table2 className="size-4" aria-hidden />
-            </Link>
-          </Button>
-        </div>
+        <Button
+          asChild
+          size="lg"
+          className="h-12 w-full justify-between px-5 text-[16px] sm:w-auto sm:min-w-[280px]"
+        >
+          <Link to={`/ueben/${nextMode}`}>
+            <span>{started ? `Weiter mit ${MODE_LABEL[nextMode]}` : `Anfangen mit ${MODE_LABEL[nextMode]}`}</span>
+            <ArrowRight className="size-4" aria-hidden />
+          </Link>
+        </Button>
       </section>
 
       {started && (
@@ -130,6 +126,33 @@ export function Home() {
               </Link>
             </li>
           ))}
+
+          {/* The paradigm writer belongs in this list: it drills the same cards
+              as Verben, six at a time, so it is a fifth way in rather than a
+              feature hidden behind one button. */}
+          <li className="border-b border-rule last:border-b-0">
+            <Link
+              to="/paradigma"
+              className="group flex min-h-[76px] items-center gap-4 py-4 transition-colors hover:bg-secondary/60"
+            >
+              <span aria-hidden className="h-11 w-[3px] shrink-0 bg-rule-strong opacity-40" />
+              <span className="flex min-w-0 flex-1 flex-col gap-1">
+                <span className="de text-[22px] leading-none" lang="de">
+                  Konjugation schreiben
+                </span>
+                <span className="text-[14px] leading-snug text-muted-foreground">
+                  Write out a whole paradigm, six forms at once, corrected cell by cell.
+                </span>
+              </span>
+              <span className="flex shrink-0 flex-col items-end gap-1 text-right">
+                <Table2 className="size-5 text-muted-foreground" aria-hidden />
+              </span>
+              <ArrowRight
+                className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                aria-hidden
+              />
+            </Link>
+          </li>
         </ul>
       </section>
     </div>

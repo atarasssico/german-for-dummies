@@ -179,6 +179,8 @@ export function Session() {
   }
 
   const answered = phase === 'answered'
+  // A varying task earns the display slot; a constant one does not.
+  const taskFirst = Boolean(question.target)
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -216,11 +218,23 @@ export function Session() {
       </header>
 
       <div className="flex flex-1 flex-col gap-7 pb-8 pt-7">
-        {/* The material you are given. Secondary, because it is not the question. */}
+        {/*
+          Emphasis follows whatever varies between cards. Declension and
+          conjugation vary by task, so the task is the display element. Verbkasus
+          and Präpositionen ask the same question every time and vary by word, so
+          there the word is the display element and the question sits next to the
+          answer, where it is actually needed.
+        */}
         <div className="flex flex-col gap-2">
           {question.sourceLabel && <span className="eyebrow">{question.sourceLabel}</span>}
           <Rail gender={question.gender}>
-            <p className="de text-[clamp(1.6rem,7vw,2.25rem)] leading-none" lang="de">
+            <p
+              className={cn(
+                'de leading-none',
+                taskFirst ? 'text-[clamp(1.6rem,7vw,2.25rem)]' : 'text-[clamp(2.1rem,10vw,3.25rem)]',
+              )}
+              lang="de"
+            >
               {question.focusArticle && (
                 <span style={{ color: question.gender ? GENDER_VAR[question.gender] : undefined }}>
                   {question.focusArticle}{' '}
@@ -234,34 +248,6 @@ export function Session() {
           </Rail>
         </div>
 
-        {/* The task. Largest thing on the card, and it sits next to the input. */}
-        <div className="flex flex-col gap-2 border-t border-rule pt-5">
-          {question.target && (
-            <span className="flex items-center gap-2 text-[13px] text-muted-foreground">
-              <ArrowDown className="size-4 shrink-0" aria-hidden />
-              {question.lead}
-            </span>
-          )}
-          <h1 className="de text-[clamp(1.8rem,8vw,2.75rem)] leading-[1]" lang="de">
-            {question.target ?? question.lead}
-          </h1>
-          {question.targetHint && (
-            <p className="text-[15px] leading-snug text-muted-foreground">{question.targetHint}</p>
-          )}
-          {question.spec && question.spec.length > 0 && (
-            <ul className="flex flex-wrap gap-1.5 pt-1">
-              {question.spec.map((item) => (
-                <li
-                  key={item}
-                  className="border border-rule px-2.5 py-1 text-[13px] text-muted-foreground"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
         {question.cloze && (
           <p className="de border-y border-rule py-4 text-[clamp(1.1rem,4.6vw,1.5rem)] leading-snug" lang="de">
             {question.cloze.split('___').map((chunk, i, all) => (
@@ -273,6 +259,43 @@ export function Session() {
               </span>
             ))}
           </p>
+        )}
+
+        {taskFirst ? (
+          <div className="flex flex-col gap-2 border-t border-rule pt-5">
+            <span className="flex items-center gap-2 text-[13px] text-muted-foreground">
+              <ArrowDown className="size-4 shrink-0" aria-hidden />
+              {question.lead}
+            </span>
+            <h1 className="de text-[clamp(1.8rem,8vw,2.75rem)] leading-[1]" lang="de">
+              {question.target}
+            </h1>
+            {question.targetHint && (
+              <p className="text-[15px] leading-snug text-muted-foreground">{question.targetHint}</p>
+            )}
+            {question.spec && question.spec.length > 0 && (
+              <ul className="flex flex-wrap gap-1.5 pt-1">
+                {question.spec.map((item) => (
+                  <li
+                    key={item}
+                    className="border border-rule px-2.5 py-1 text-[13px] text-muted-foreground"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1.5 border-t border-rule pt-5">
+            <h1 className="flex items-start gap-2 text-[18px] font-medium leading-snug">
+              <ArrowDown className="mt-1 size-4 shrink-0 text-muted-foreground" aria-hidden />
+              {question.lead}
+            </h1>
+            {question.targetHint && (
+              <p className="pl-6 text-[15px] leading-snug text-muted-foreground">{question.targetHint}</p>
+            )}
+          </div>
         )}
 
         {!answered && question.kind === 'type' && (

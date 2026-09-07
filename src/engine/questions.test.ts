@@ -219,15 +219,21 @@ describe('question content', () => {
     expect(q?.spec).toContain('bestimmter Artikel')
   })
 
-  it('names the adjective in the task when one is included', () => {
-    for (let i = 0; i < 40; i++) {
-      const q = buildQuestion('decl:haus:dat', { ...ALL, determiners: ['def'], usePlural: false })
-      if (q?.expects === 'Artikel + Adjektiv + Nomen') {
-        expect(q.spec?.some((item) => item.startsWith('Adjektiv:'))).toBe(true)
-        return
-      }
+  it('names the adjective in the task whenever one is included', () => {
+    // Which cards get an adjective is seeded per card id, so assert the
+    // invariant across the pool rather than retrying one id.
+    const cards = poolFor('articles', ALL).map((id) => buildQuestion(id, ALL))
+    const withAdjective = cards.filter((q) => q?.spec?.some((item) => item.startsWith('Adjektiv:')))
+    expect(withAdjective.length).toBeGreaterThan(0)
+    for (const q of withAdjective) {
+      expect(q?.expects, q?.id).toBe('Artikel + Adjektiv + Nomen')
     }
-    throw new Error('never produced an adjective card in 40 tries')
+    const withoutAdjective = cards.filter(
+      (q) => q?.kind === 'type' && !q.spec?.some((item) => item.startsWith('Adjektiv:')),
+    )
+    for (const q of withoutAdjective) {
+      expect(q?.expects, q?.id).toBe('Artikel + Nomen')
+    }
   })
 
   it('states the tense, the person and any prefix for a verb card', () => {

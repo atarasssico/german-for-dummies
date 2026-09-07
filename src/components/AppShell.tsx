@@ -1,13 +1,14 @@
 import { NavLink, useLocation } from 'react-router-dom'
-import { BookOpen, Dumbbell, Settings2 } from 'lucide-react'
+import { BookOpen, Dumbbell, PenLine, Settings2 } from 'lucide-react'
 import { GENDER_VAR } from '@/lib/gender'
 import { cn } from '@/lib/utils'
 import type { ReactNode } from 'react'
 
 const NAV = [
-  { to: '/', label: 'Üben', sub: 'Practice', icon: Dumbbell },
-  { to: '/tabellen', label: 'Tabellen', sub: 'Reference', icon: BookOpen },
-  { to: '/einstellungen', label: 'Einstellungen', sub: 'Settings', icon: Settings2 },
+  { to: '/', label: 'Üben', icon: Dumbbell },
+  { to: '/paradigma', label: 'Schreiben', icon: PenLine },
+  { to: '/tabellen', label: 'Tabellen', icon: BookOpen },
+  { to: '/einstellungen', label: 'Einstellungen', icon: Settings2 },
 ]
 
 /** Wordmark: the three gender hues as a rule under the word. */
@@ -86,7 +87,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   end={item.to === '/'}
                   className={({ isActive }) =>
                     cn(
-                      'flex min-h-[56px] flex-1 flex-col items-center justify-center gap-1 text-[13px] tracking-wide',
+                      'flex min-h-[56px] flex-1 flex-col items-center justify-center gap-1 px-1 text-center text-[12px] leading-tight tracking-wide',
                       isActive ? 'text-foreground' : 'text-muted-foreground',
                     )
                   }
