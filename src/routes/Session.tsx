@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowRight, RotateCcw, X } from 'lucide-react'
+import { ArrowDown, ArrowRight, RotateCcw, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Correction } from '@/components/Correction'
 import { Rail } from '@/components/Rail'
@@ -199,7 +199,7 @@ export function Session() {
       </div>
 
       <header className="flex items-baseline justify-between gap-4 border-b-[1.5px] border-rule-strong pb-2 pt-4">
-        <span className="eyebrow">{question.lead}</span>
+        <span className="eyebrow">{MODE_LABEL[activeMode]}</span>
         <span className="flex items-center gap-3">
           <span className="eyebrow tabular">
             {String(index + 1).padStart(2, '0')} / {String(queue.length).padStart(2, '0')}
@@ -216,19 +216,51 @@ export function Session() {
       </header>
 
       <div className="flex flex-1 flex-col gap-7 pb-8 pt-7">
-        <Rail gender={question.gender}>
-          <h1 className="de text-balance text-[clamp(2.1rem,10vw,3.5rem)] leading-[0.98]" lang="de">
-            {question.focusArticle && (
-              <span style={{ color: question.gender ? GENDER_VAR[question.gender] : undefined }}>
-                {question.focusArticle}{' '}
-              </span>
+        {/* The material you are given. Secondary, because it is not the question. */}
+        <div className="flex flex-col gap-2">
+          {question.sourceLabel && <span className="eyebrow">{question.sourceLabel}</span>}
+          <Rail gender={question.gender}>
+            <p className="de text-[clamp(1.6rem,7vw,2.25rem)] leading-none" lang="de">
+              {question.focusArticle && (
+                <span style={{ color: question.gender ? GENDER_VAR[question.gender] : undefined }}>
+                  {question.focusArticle}{' '}
+                </span>
+              )}
+              {question.focus}
+            </p>
+            {question.sub && (
+              <p className="pt-1.5 text-[14px] leading-snug text-muted-foreground">{question.sub}</p>
             )}
-            {question.focus}
-          </h1>
-          {question.sub && (
-            <p className="pt-2 text-[15px] leading-snug text-muted-foreground">{question.sub}</p>
+          </Rail>
+        </div>
+
+        {/* The task. Largest thing on the card, and it sits next to the input. */}
+        <div className="flex flex-col gap-2 border-t border-rule pt-5">
+          {question.target && (
+            <span className="flex items-center gap-2 text-[13px] text-muted-foreground">
+              <ArrowDown className="size-4 shrink-0" aria-hidden />
+              {question.lead}
+            </span>
           )}
-        </Rail>
+          <h1 className="de text-[clamp(1.8rem,8vw,2.75rem)] leading-[1]" lang="de">
+            {question.target ?? question.lead}
+          </h1>
+          {question.targetHint && (
+            <p className="text-[15px] leading-snug text-muted-foreground">{question.targetHint}</p>
+          )}
+          {question.spec && question.spec.length > 0 && (
+            <ul className="flex flex-wrap gap-1.5 pt-1">
+              {question.spec.map((item) => (
+                <li
+                  key={item}
+                  className="border border-rule px-2.5 py-1 text-[13px] text-muted-foreground"
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         {question.cloze && (
           <p className="de border-y border-rule py-4 text-[clamp(1.1rem,4.6vw,1.5rem)] leading-snug" lang="de">
@@ -251,7 +283,11 @@ export function Session() {
               submit(typed)
             }}
           >
+            <label htmlFor="antwort" className="eyebrow">
+              {question.expects ?? 'Deine Antwort'}
+            </label>
             <input
+              id="antwort"
               ref={inputRef}
               value={typed}
               onChange={(event) => setTyped(event.target.value)}
@@ -260,10 +296,9 @@ export function Session() {
               autoCorrect="off"
               spellCheck={false}
               enterKeyHint="done"
-              aria-label="Deine Antwort"
               name="antwort"
               lang="de"
-              placeholder="Antwort…"
+              placeholder="hier tippen…"
               className="de w-full border-b-2 border-rule bg-transparent pb-2 text-[clamp(1.5rem,6vw,2.1rem)] leading-tight outline-none focus-visible:border-foreground focus-visible:bg-secondary/40 placeholder:text-muted-foreground/40"
             />
             <div className="flex items-center justify-between gap-3">

@@ -191,10 +191,52 @@ describe('question content', () => {
   it('asks a two-way preposition both ways', () => {
     const dat = buildQuestion('wechsel:auf:dat', ALL)
     const akk = buildQuestion('wechsel:auf:akk', ALL)
-    expect(dat?.lead).toContain('Wo?')
-    expect(akk?.lead).toContain('Wohin?')
+    expect(dat?.target).toContain('Wo?')
+    expect(akk?.target).toContain('Wohin?')
     expect(['dem', 'der']).toContain(dat?.answer.text)
     expect(['den', 'die', 'das']).toContain(akk?.answer.text)
+  })
+
+  it('states the task on every typed card', () => {
+    // The bug this guards: the case being asked was a dim eyebrow while the
+    // noun being given was the largest thing on screen.
+    for (const mode of MODES) {
+      for (const id of poolFor(mode, ALL)) {
+        const q = buildQuestion(id, ALL)
+        if (!q || q.kind !== 'type') continue
+        expect(q.target, `${id} has no target`).toBeTruthy()
+        expect(q.expects, `${id} does not say what the answer must contain`).toBeTruthy()
+      }
+    }
+  })
+
+  it('shows the declension task as a transformation with both cases named', () => {
+    const q = buildQuestion('decl:kind:dat', { ...ALL, determiners: ['def'], usePlural: false, includeAdjectives: false })
+    expect(q?.sourceLabel).toBe('Nominativ Singular')
+    expect(q?.target).toBe('Dativ Singular')
+    expect(q?.targetHint).toBe('wem?')
+    expect(q?.expects).toBe('Artikel + Nomen')
+    expect(q?.spec).toContain('bestimmter Artikel')
+  })
+
+  it('names the adjective in the task when one is included', () => {
+    for (let i = 0; i < 40; i++) {
+      const q = buildQuestion('decl:haus:dat', { ...ALL, determiners: ['def'], usePlural: false })
+      if (q?.expects === 'Artikel + Adjektiv + Nomen') {
+        expect(q.spec?.some((item) => item.startsWith('Adjektiv:'))).toBe(true)
+        return
+      }
+    }
+    throw new Error('never produced an adjective card in 40 tries')
+  })
+
+  it('states the tense, the person and any prefix for a verb card', () => {
+    const q = buildQuestion('conj:anrufen:praesens:du', ALL)
+    expect(q?.sourceLabel).toBe('Infinitiv')
+    expect(q?.target).toBe('Präsens')
+    expect(q?.targetHint).toBe('du')
+    expect(q?.spec).toContain('trennbar: an-')
+    expect(q?.expects).toBe('Verbform + Präfix am Ende')
   })
 
   it('returns null for an id that no longer resolves', () => {

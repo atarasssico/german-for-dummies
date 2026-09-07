@@ -77,6 +77,20 @@ export interface Question {
   focusArticle?: string
   /** Gender that IS the answer, so it is only shown once the card is answered. */
   revealGender?: Gender
+  /**
+   * The task, spelled out. `target` is what you have to produce and gets the
+   * largest type on the card, because the thing being asked should outrank the
+   * thing being given.
+   */
+  target?: string
+  /** Clarifier under the target, e.g. the case question word. */
+  targetHint?: string
+  /** What form the material is shown in, e.g. 'Nominativ' or 'Infinitiv'. */
+  sourceLabel?: string
+  /** Conditions on the answer, e.g. Singular, definite article, an adjective. */
+  spec?: string[]
+  /** What the answer has to contain, shown as the input's label. */
+  expects?: string
 }
 
 export interface GenSettings {
@@ -268,9 +282,11 @@ function genderQuestion(n: Noun): Question {
     mode: 'articles',
     kind: 'choice',
     level: n.level,
-    lead: 'Welcher Artikel?',
+    lead: 'Genus bestimmen',
     focus: n.word,
     sub: n.en,
+    target: 'Welcher Artikel?',
+    targetHint: 'der, die oder das',
     choices: [
       { id: 'm', label: 'der' },
       { id: 'f', label: 'die' },
@@ -301,13 +317,18 @@ function declensionQuestion(n: Noun, kasus: Kasus, s: GenSettings, rand: () => n
     mode: 'articles',
     kind: 'type',
     level: n.level,
-    lead: `${KASUS_LABEL[kasus]} ${num === 'pl' ? 'Plural' : 'Singular'} · ${KASUS_QUESTION[kasus]}`,
+    lead: 'Wortgruppe umformen',
     focus: n.word,
     focusArticle: ARTICLE_LABEL[n.gender],
     gender: n.gender,
-    sub: [n.en, DET_HINT[det] ?? determiner(det).label, adj ? `+ ${adj.word}` : null]
-      .filter(Boolean)
-      .join(' · '),
+    sub: n.en,
+    sourceLabel: 'Nominativ Singular',
+    target: `${KASUS_LABEL[kasus]} ${num === 'pl' ? 'Plural' : 'Singular'}`,
+    targetHint: KASUS_QUESTION[kasus],
+    spec: [DET_HINT[det] ?? determiner(det).label, adj ? `Adjektiv: ${adj.word}` : null].filter(
+      (item): item is string => Boolean(item),
+    ),
+    expects: adj ? 'Artikel + Adjektiv + Nomen' : 'Artikel + Nomen',
     answer: { text: phrase.text, alts: phrase.alts },
     rules,
     note: n.hint,
@@ -316,10 +337,6 @@ function declensionQuestion(n: Noun, kasus: Kasus, s: GenSettings, rand: () => n
 
 function conjugationQuestion(v: Verb, tense: Tense, person: PersonKey): Question {
   const form = conjugate(v, tense, person)
-  const label = tense === 'imperativ'
-    ? `${TENSE_LABEL[tense]} · ${person === 'sie' ? 'Sie' : person}`
-    : `${TENSE_LABEL[tense]} · ${PERSON_LABEL[person]}`
-
   const rules: string[] = []
   if (v.class === 'weak') {
     rules.push(`${v.infinitive} is weak: regular endings all the way through.`)
@@ -339,9 +356,25 @@ function conjugationQuestion(v: Verb, tense: Tense, person: PersonKey): Question
     mode: 'verbs',
     kind: 'type',
     level: v.level,
-    lead: label,
+    lead: 'Verb konjugieren',
     focus: v.infinitive,
-    sub: [v.en, v.class === 'weak' ? null : v.class].filter(Boolean).join(' · '),
+    sub: v.en,
+    sourceLabel: 'Infinitiv',
+    target: TENSE_LABEL[tense],
+    targetHint:
+      tense === 'imperativ'
+        ? `Imperativ für ${person === 'sie' ? 'Sie' : person}`
+        : PERSON_LABEL[person],
+    spec: [
+      v.class === 'weak' ? 'regelmäßig' : v.class === 'strong' ? 'starkes Verb' : v.class === 'modal' ? 'Modalverb' : 'unregelmäßig',
+      v.sep ? `trennbar: ${v.sep}-` : null,
+      v.reflexive ? 'reflexiv' : null,
+    ].filter((item): item is string => Boolean(item)),
+    expects: v.reflexive
+      ? 'Verbform + Reflexivpronomen'
+      : v.sep
+        ? 'Verbform + Präfix am Ende'
+        : 'nur die Verbform',
     answer: { text: form.text, alts: form.alts },
     rules,
     note: v.note,
@@ -487,9 +520,12 @@ function wechselQuestion(prepId: string, kasus: 'akk' | 'dat', rand: () => numbe
     mode: 'prepositions',
     kind: 'type',
     level: p.level,
-    lead: kasus === 'dat' ? 'Wo? Position' : 'Wohin? Richtung',
+    lead: 'Lücke füllen',
     focus: p.word,
-    sub: `${p.en} · fill the gap with the definite article`,
+    sub: p.en,
+    target: kasus === 'dat' ? 'Wo? Position' : 'Wohin? Richtung',
+    targetHint: `${p.word} + Akkusativ oder Dativ?`,
+    expects: 'nur der bestimmte Artikel',
     cloze,
     answer: { text: det ?? '', alts: [] },
     rules: [
