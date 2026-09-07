@@ -1,0 +1,259 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Self-hosted so the app keeps its typography offline. */
+@import "@fontsource-variable/archivo/wght.css";
+@import "@fontsource-variable/newsreader/wght.css";
+@import "@fontsource-variable/newsreader/wght-italic.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ---------------------------------------------------------------------------
+   Direction: "Duden table". A grammar reference you drill inside.
+   Archivo (DIN-lineage grotesque) for the interface, Newsreader for German.
+   German words are headwords in a dictionary, so they get the serif.
+
+   The three gender hues are the only colour system in the app and they mean
+   nothing else, ever: der = blue, die = pink, das = green. Correct and wrong
+   are carried by form (a rule, a strike-through) plus amber, so no colour
+   ever has to mean two things.
+--------------------------------------------------------------------------- */
+
+@theme inline {
+    --font-sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
+    --font-heading: var(--font-sans);
+
+    --color-gender-m: var(--gender-m);
+    --color-gender-f: var(--gender-f);
+    --color-gender-n: var(--gender-n);
+    --color-wrong: var(--wrong);
+    --color-wrong-soft: var(--wrong-soft);
+    --color-rule: var(--rule);
+    --color-rule-strong: var(--rule-strong);
+
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+
+    --radius-sm: 1px;
+    --radius-md: 2px;
+    --radius-lg: var(--radius);
+    --radius-xl: 4px;
+    --radius-2xl: 6px;
+    --radius-3xl: 8px;
+    --radius-4xl: 10px;
+}
+
+:root {
+    /* paper and ink */
+    --background: #fbfbf9;
+    --foreground: #191b1e;
+    --card: #ffffff;
+    --card-foreground: #191b1e;
+    --popover: #ffffff;
+    --popover-foreground: #191b1e;
+    --primary: #191b1e;
+    --primary-foreground: #fbfbf9;
+    --secondary: #f1f1ec;
+    --secondary-foreground: #191b1e;
+    --muted: #f1f1ec;
+    --muted-foreground: #6a6f77;
+    --accent: #ecece6;
+    --accent-foreground: #191b1e;
+    --destructive: #a32a16;
+    --border: #dcdcd5;
+    --input: #dcdcd5;
+    --ring: #191b1e;
+
+    /* the two rule weights the ledger is built from */
+    --rule: #dcdcd5;
+    --rule-strong: #191b1e;
+
+    /* gender: the whole colour system */
+    --gender-m: #2f62c4;
+    --gender-f: #c4327a;
+    --gender-n: #2e7d5b;
+
+    /* correction */
+    --wrong: #8a6110;
+    --wrong-soft: #f6efdd;
+
+    --chart-1: var(--gender-m);
+    --chart-2: var(--gender-f);
+    --chart-3: var(--gender-n);
+    --chart-4: #6a6f77;
+    --chart-5: #191b1e;
+
+    --radius: 2px;
+
+    --sidebar: #f1f1ec;
+    --sidebar-foreground: #191b1e;
+    --sidebar-primary: #191b1e;
+    --sidebar-primary-foreground: #fbfbf9;
+    --sidebar-accent: #ecece6;
+    --sidebar-accent-foreground: #191b1e;
+    --sidebar-border: #dcdcd5;
+    --sidebar-ring: #191b1e;
+}
+
+.dark {
+    --background: #131518;
+    --foreground: #e8eaec;
+    --card: #1a1d21;
+    --card-foreground: #e8eaec;
+    --popover: #1a1d21;
+    --popover-foreground: #e8eaec;
+    --primary: #e8eaec;
+    --primary-foreground: #131518;
+    --secondary: #23262b;
+    --secondary-foreground: #e8eaec;
+    --muted: #23262b;
+    --muted-foreground: #9aa0a9;
+    --accent: #2a2e34;
+    --accent-foreground: #e8eaec;
+    --destructive: #e0705a;
+    --border: #2b2f35;
+    --input: #363b42;
+    --ring: #e8eaec;
+
+    --rule: #2b2f35;
+    --rule-strong: #6d737c;
+
+    /* desaturated a step: saturated hues vibrate on a dark ground */
+    --gender-m: #7ba3f5;
+    --gender-f: #ef7cb4;
+    --gender-n: #56be91;
+
+    --wrong: #d8a233;
+    --wrong-soft: #2c2617;
+
+    --chart-1: var(--gender-m);
+    --chart-2: var(--gender-f);
+    --chart-3: var(--gender-n);
+    --chart-4: #9aa0a9;
+    --chart-5: #e8eaec;
+
+    --sidebar: #1a1d21;
+    --sidebar-foreground: #e8eaec;
+    --sidebar-primary: #e8eaec;
+    --sidebar-primary-foreground: #131518;
+    --sidebar-accent: #2a2e34;
+    --sidebar-accent-foreground: #e8eaec;
+    --sidebar-border: #2b2f35;
+    --sidebar-ring: #e8eaec;
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    html {
+        @apply font-sans;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+        @apply bg-background text-foreground antialiased;
+        /* No 300ms double-tap delay, and no blue flash on tap. */
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        /* Keep the drill footer clear of the iOS home indicator. */
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* Digits line up in tables, counters and paradigm grids. */
+    table, .tabular {
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* A scroll inside a sheet or dialog must not scroll the page behind it. */
+    [data-slot='dialog-content'],
+    [data-slot='sheet-content'] {
+        overscroll-behavior: contain;
+    }
+
+    ::selection {
+        background: var(--foreground);
+        color: var(--background);
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: .01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: .01ms !important;
+        }
+    }
+}
+
+@layer components {
+    /* The eyebrow that labels every task. Archivo, tracked out, small. */
+    .eyebrow {
+        @apply text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground;
+    }
+
+    /* German text is set as a dictionary headword. */
+    .de {
+        font-family: var(--font-serif);
+        font-variation-settings: 'wght' 500;
+        letter-spacing: -0.01em;
+    }
+
+    /* The signature: a 3px gender rail down the left of anything nominal. */
+    .rail {
+        @apply relative pl-4;
+    }
+    .rail::before {
+        content: '';
+        @apply absolute left-0 top-0 bottom-0 w-[3px];
+        background: var(--rail-color, var(--rule-strong));
+    }
+}
+
+@layer components {
+    /*
+     * Long reference lists (200+ verbs, 116 valency entries). Letting the browser
+     * skip layout for offscreen rows is cheaper than pulling in a virtualiser,
+     * and it keeps the rows selectable and findable with the browser's own search.
+     */
+    .long-list > li {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 84px;
+    }
+}
