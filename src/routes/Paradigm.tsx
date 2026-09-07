@@ -98,8 +98,8 @@ export function Paradigm() {
       <header className="flex items-start justify-between gap-4 pt-4">
         <div className="flex flex-col gap-2">
           <span className="eyebrow">Konjugation schreiben</span>
-          <h1 className="de text-[clamp(2rem,9vw,3rem)] leading-none" lang="de">{verb.infinitive}</h1>
-          <p className="text-[15px] text-muted-foreground">
+          <h1 className="de text-[clamp(2rem,9vw,3rem)] font-semibold leading-none" lang="de">{verb.infinitive}</h1>
+          <p className="text-[15px] text-foreground-soft">
             {verb.en}
             {verb.class !== 'weak' && (
               <>
@@ -152,7 +152,7 @@ export function Paradigm() {
         </div>
       </div>
 
-      <p className="border-y border-rule py-2.5 text-[14px] text-muted-foreground">
+      <p className="border-y border-rule py-2.5 text-[14px] text-foreground-soft">
         {TENSE_LABEL[tense]}: {TENSE_HINT[tense]}.
         {tense === 'konjunktiv2' && prefersWuerde(verb) && (
           <> Same as the Präteritum for this verb, so speakers use würde + Infinitiv.</>
@@ -173,7 +173,7 @@ export function Paradigm() {
             <div key={person} className="flex items-baseline gap-3 border-b border-rule py-2.5">
               <label
                 htmlFor={`cell-${person}`}
-                className="w-[5.5rem] shrink-0 text-[15px] text-muted-foreground"
+                className="w-[5.5rem] shrink-0 text-[15px] font-medium text-foreground-soft"
               >
                 {tense === 'imperativ' ? (person === 'sie' ? 'Sie' : person) : PERSON_LABEL[person]}
               </label>
@@ -201,7 +201,7 @@ export function Paradigm() {
                   )}
                 />
                 {checked && !right && (
-                  <span className="de text-[16px]">{result?.expected}</span>
+                  <span className="de text-[16px] font-semibold">{result?.expected}</span>
                 )}
               </div>
               {checked && (
@@ -245,7 +245,7 @@ export function Paradigm() {
       </form>
 
       {verb.note && (
-        <p className="border-t border-rule pt-3 text-[14px] leading-snug text-muted-foreground">
+        <p className="border-t border-rule pt-3 text-[14px] leading-snug text-foreground-soft">
           {verb.note}
         </p>
       )}
@@ -280,12 +280,12 @@ function VerbPicker({ onPick }: { onPick: (id: string) => void }) {
           autoComplete="off"
           name="verbsuche"
           spellCheck={false}
-          className="de w-full border-b border-transparent bg-transparent text-[20px] outline-none focus-visible:border-foreground placeholder:text-muted-foreground/50"
+          className="de w-full border-b border-transparent bg-transparent text-[20px] outline-none focus-visible:border-foreground placeholder:text-muted-foreground/60"
         />
       </label>
 
       {matches.length === 0 ? (
-        <p className="py-6 text-base text-muted-foreground">
+        <p className="py-6 text-base text-foreground-soft">
           No verb matches “{query}”. Try the infinitive, or the English.
         </p>
       ) : (
@@ -313,10 +313,10 @@ function VerbPicker({ onPick }: { onPick: (id: string) => void }) {
 
 export function PrincipalParts({ verb, className }: { verb: Verb; className?: string }) {
   if (verb.class === 'weak') {
-    return <span className={cn('text-[14px] text-muted-foreground', className)}>regelmäßig</span>
+    return <span className={cn('text-[14px] text-foreground-soft', className)}>regelmäßig</span>
   }
   return (
-    <span className={cn('de hidden text-[16px] text-muted-foreground sm:inline', className)}>
+    <span className={cn('de hidden text-[16px] text-foreground-soft sm:inline', className)}>
       {praetBase(verb)} · {verb.aux === 'sein' ? 'ist' : 'hat'} {partizip2(verb)}
     </span>
   )

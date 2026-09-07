@@ -39,7 +39,7 @@ export function LedgerHead({
       )}
     >
       <Heading className="eyebrow">{label}</Heading>
-      {right ? <span className="eyebrow tabular">{right}</span> : null}
+      {right ? <span className="eyebrow-meta tabular">{right}</span> : null}
     </div>
   )
 }

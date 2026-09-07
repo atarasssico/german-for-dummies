@@ -464,7 +464,7 @@ const GROUP_LABEL: Record<PrepGroup, string> = {
   akk: 'Akkusativ',
   dat: 'Dativ',
   gen: 'Genitiv',
-  wechsel: 'Akkusativ or Dativ',
+  wechsel: 'Akkusativ oder Dativ',
 }
 
 function prepGroupQuestion(id: string): Question | null {

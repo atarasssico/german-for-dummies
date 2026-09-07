@@ -148,7 +148,7 @@ export function Session() {
       <div className="flex flex-col gap-4 pt-10">
         <p className="eyebrow">{MODE_LABEL[activeMode]}</p>
         <p className="de text-3xl">Nichts zu üben.</p>
-        <p className="max-w-prose text-base text-muted-foreground">
+        <p className="max-w-prose text-base text-foreground-soft">
           Every card in this trainer is scheduled for a later day. Raise the level in Settings to
           add more, or come back tomorrow.
         </p>
@@ -203,7 +203,7 @@ export function Session() {
       <header className="flex items-baseline justify-between gap-4 border-b-[1.5px] border-rule-strong pb-2 pt-4">
         <span className="eyebrow">{MODE_LABEL[activeMode]}</span>
         <span className="flex items-center gap-3">
-          <span className="eyebrow tabular">
+          <span className="eyebrow-meta tabular">
             {String(index + 1).padStart(2, '0')} / {String(queue.length).padStart(2, '0')}
           </span>
           <button
@@ -231,6 +231,7 @@ export function Session() {
             <p
               className={cn(
                 'de leading-none',
+                'font-semibold',
                 taskFirst ? 'text-[clamp(1.6rem,7vw,2.25rem)]' : 'text-[clamp(2.1rem,10vw,3.25rem)]',
               )}
               lang="de"
@@ -243,7 +244,7 @@ export function Session() {
               {question.focus}
             </p>
             {question.sub && (
-              <p className="pt-1.5 text-[14px] leading-snug text-muted-foreground">{question.sub}</p>
+              <p className="pt-1.5 text-[14px] leading-snug text-foreground-soft">{question.sub}</p>
             )}
           </Rail>
         </div>
@@ -267,18 +268,18 @@ export function Session() {
               <ArrowDown className="size-4 shrink-0" aria-hidden />
               {question.lead}
             </span>
-            <h1 className="de text-[clamp(1.8rem,8vw,2.75rem)] leading-[1]" lang="de">
+            <h1 className="de text-[clamp(1.8rem,8vw,2.75rem)] font-semibold leading-[1]" lang="de">
               {question.target}
             </h1>
             {question.targetHint && (
-              <p className="text-[15px] leading-snug text-muted-foreground">{question.targetHint}</p>
+              <p className="text-[16px] leading-snug text-foreground-soft">{question.targetHint}</p>
             )}
             {question.spec && question.spec.length > 0 && (
               <ul className="flex flex-wrap gap-1.5 pt-1">
                 {question.spec.map((item) => (
                   <li
                     key={item}
-                    className="border border-rule px-2.5 py-1 text-[13px] text-muted-foreground"
+                    className="border border-rule-strong/25 bg-secondary px-2.5 py-1 text-[13px] font-medium text-foreground-soft"
                   >
                     {item}
                   </li>
@@ -288,12 +289,12 @@ export function Session() {
           </div>
         ) : (
           <div className="flex flex-col gap-1.5 border-t border-rule pt-5">
-            <h1 className="flex items-start gap-2 text-[18px] font-medium leading-snug">
+            <h1 className="flex items-start gap-2 text-[19px] font-semibold leading-snug">
               <ArrowDown className="mt-1 size-4 shrink-0 text-muted-foreground" aria-hidden />
               {question.lead}
             </h1>
             {question.targetHint && (
-              <p className="pl-6 text-[15px] leading-snug text-muted-foreground">{question.targetHint}</p>
+              <p className="pl-6 text-[15px] leading-snug text-foreground-soft">{question.targetHint}</p>
             )}
           </div>
         )}
@@ -322,7 +323,7 @@ export function Session() {
               name="antwort"
               lang="de"
               placeholder="hier tippen…"
-              className="de w-full border-b-2 border-rule bg-transparent pb-2 text-[clamp(1.5rem,6vw,2.1rem)] leading-tight outline-none focus-visible:border-foreground focus-visible:bg-secondary/40 placeholder:text-muted-foreground/40"
+              className="de w-full border-b-2 border-rule bg-transparent pb-2 text-[clamp(1.5rem,6vw,2.1rem)] leading-tight outline-none focus-visible:border-foreground focus-visible:bg-secondary/40 placeholder:text-muted-foreground/55"
             />
             <div className="flex items-center justify-between gap-3">
               <UmlautKeys
@@ -368,7 +369,7 @@ export function Session() {
                       {choice.label}
                     </span>
                     {choice.sub && (
-                      <span className="text-[14px] leading-snug text-muted-foreground">
+                      <span className="text-[14px] leading-snug text-foreground-soft">
                         {choice.sub}
                       </span>
                     )}
@@ -400,7 +401,7 @@ export function Session() {
                 name="praeposition"
                 lang="de"
                 placeholder="auf, an, über…"
-                className="de w-full border-b-2 border-rule bg-transparent pb-2 text-[clamp(1.4rem,5.5vw,1.9rem)] leading-tight outline-none focus-visible:border-foreground focus-visible:bg-secondary/40 placeholder:text-muted-foreground/40"
+                className="de w-full border-b-2 border-rule bg-transparent pb-2 text-[clamp(1.4rem,5.5vw,1.9rem)] leading-tight outline-none focus-visible:border-foreground focus-visible:bg-secondary/40 placeholder:text-muted-foreground/55"
               />
             </label>
 
@@ -516,10 +517,10 @@ function SessionSummary({
     <div className="flex flex-col gap-8 pt-8">
       <div className="flex flex-col gap-3">
         <span className="eyebrow">{MODE_LABEL[mode]} · fertig</span>
-        <p className="de text-[clamp(2.5rem,11vw,4rem)] leading-[0.95]">
+        <p className="de text-[clamp(2.5rem,11vw,4rem)] font-semibold leading-[0.95]">
           {right} <span className="text-muted-foreground">von {log.length}</span>
         </p>
-        <p className="text-base text-muted-foreground">
+        <p className="text-base text-foreground-soft">
           {wrong.length === 0
             ? 'Every card right. They all move up a compartment.'
             : `${wrong.length} card${wrong.length === 1 ? '' : 's'} went back to the first compartment, so ${wrong.length === 1 ? 'it comes' : 'they come'} round again today.`}

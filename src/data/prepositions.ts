@@ -22,10 +22,10 @@ export interface Preposition {
 }
 
 export const PREP_GROUP_LABEL: Record<PrepGroup, string> = {
-  akk: 'always Akkusativ',
-  dat: 'always Dativ',
-  gen: 'always Genitiv',
-  wechsel: 'Akkusativ or Dativ',
+  akk: 'immer Akkusativ',
+  dat: 'immer Dativ',
+  gen: 'immer Genitiv',
+  wechsel: 'Akkusativ oder Dativ',
 }
 
 export const PREPOSITIONS: Preposition[] = [

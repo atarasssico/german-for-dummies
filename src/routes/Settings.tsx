@@ -95,10 +95,10 @@ function SettingRow({
   return (
     <div className="flex items-start justify-between gap-6 border-b border-rule py-3.5">
       <div className="flex flex-col gap-0.5">
-        <Label htmlFor={id} className="text-[16px] font-medium">
+        <Label htmlFor={id} className="text-[16px] font-semibold">
           {title}
         </Label>
-        <p className="max-w-prose text-[14px] leading-snug text-muted-foreground">{detail}</p>
+        <p className="max-w-prose text-[14px] leading-relaxed text-foreground-soft">{detail}</p>
       </div>
       <Switch id={id} checked={checked} onCheckedChange={onChange} className="mt-1 shrink-0" />
     </div>
@@ -145,7 +145,7 @@ export function SettingsPage() {
             </Chip>
           ))}
         </div>
-        <p className="text-[14px] text-muted-foreground">{LEVEL_NOTE[settings.level]}</p>
+        <p className="text-[14px] text-foreground-soft">{LEVEL_NOTE[settings.level]}</p>
         <ul className="flex flex-col">
           {poolSizes.map(({ mode, size }) => (
             <li
@@ -176,7 +176,7 @@ export function SettingsPage() {
 
       <section className="flex flex-col gap-4">
         <LedgerHead label="Zeitformen" right={`${settings.tenses.length} von ${TENSES.length}`} />
-        <p className="text-[14px] text-muted-foreground">
+        <p className="text-[14px] text-foreground-soft">
           Which tenses the verb drill asks for. The paradigm writer always offers all ten.
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -198,7 +198,7 @@ export function SettingsPage() {
 
       <section className="flex flex-col gap-4">
         <LedgerHead label="Determinative" right={`${settings.determiners.length} ausgewählt`} />
-        <p className="text-[14px] text-muted-foreground">
+        <p className="text-[14px] text-foreground-soft">
           Which determiners can appear in the declension drill.
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -288,7 +288,7 @@ export function SettingsPage() {
       <section className="flex flex-col gap-4">
         <LedgerHead label="Datensicherung" right={PERSISTENCE_LABEL[storage.persistence]} />
 
-        <p className="max-w-prose text-[15px] leading-relaxed text-muted-foreground">
+        <p className="max-w-prose text-[15px] leading-relaxed text-foreground-soft">
           Your progress lives in this browser only, and takes {formatBytes(storage.progressBytes)}.{' '}
           {PERSISTENCE_NOTE[storage.persistence]} Clearing site data deletes it either way, so export
           a copy now and then.
@@ -350,7 +350,7 @@ export function SettingsPage() {
           </p>
         )}
 
-        <p className="max-w-prose text-[15px] leading-relaxed text-muted-foreground">
+        <p className="max-w-prose text-[15px] leading-relaxed text-foreground-soft">
           Merging keeps whichever copy of each card was reviewed more recently, so your phone and
           your desktop can be merged in either order with the same result. Importing the same file
           twice changes nothing.
@@ -362,7 +362,7 @@ export function SettingsPage() {
           label="Zurücksetzen"
           right={`${Object.keys(progress.cards).length.toLocaleString('de-DE')} Karten begonnen`}
         />
-        <p className="max-w-prose text-[15px] leading-relaxed text-muted-foreground">
+        <p className="max-w-prose text-[15px] leading-relaxed text-foreground-soft">
           Nothing here is automatic. Progress is only ever cleared when you clear it.
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -420,7 +420,7 @@ export function SettingsPage() {
         </Dialog>
       </section>
 
-      <p className="border-t border-rule pt-4 text-[14px] leading-relaxed text-muted-foreground">
+      <p className="border-t border-rule pt-4 text-[14px] leading-relaxed text-foreground-soft">
         Grammar generated from principal parts rather than typed out by hand, so every form comes
         from one rule in one place. A wrong form is a bug. Open an issue and it gets fixed for good.
       </p>

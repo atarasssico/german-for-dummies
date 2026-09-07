@@ -31,7 +31,7 @@ export function Home() {
   const nextMode: Mode = progress.lastMode ?? 'articles'
 
   if (!ready) {
-    return <div className="pt-10 text-base text-muted-foreground">Loading your box…</div>
+    return <div className="pt-10 text-base text-foreground-soft">Loading your box…</div>
   }
 
   return (
@@ -44,7 +44,7 @@ export function Home() {
 
         {started ? (
           <div className="flex flex-col gap-1.5">
-            <h1 className="de text-balance text-[clamp(2.5rem,11vw,4.25rem)] leading-[0.95]">
+            <h1 className="de text-balance text-[clamp(2.5rem,11vw,4.25rem)] font-semibold leading-[0.95]">
               {today.answered}{' '}
               <span className="text-muted-foreground">
                 Karte{today.answered === 1 ? '' : 'n'} heute
@@ -59,7 +59,7 @@ export function Home() {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            <h1 className="de text-balance text-[clamp(2rem,8vw,3.25rem)] leading-[1.02]" lang="de">
+            <h1 className="de text-balance text-[clamp(2rem,8vw,3.25rem)] font-semibold leading-[1.02]" lang="de">
               Fang mit <span className="text-gender-m">der</span>,{' '}
               <span className="text-gender-f">die</span>, <span className="text-gender-n">das</span> an.
             </h1>
@@ -106,8 +106,8 @@ export function Home() {
                   style={{ opacity: 0.25 + 0.75 * summary.progress }}
                 />
                 <span className="flex min-w-0 flex-1 flex-col gap-1">
-                  <span className="de text-[22px] leading-none" lang="de">{MODE_LABEL[mode]}</span>
-                  <span className="text-[15px] leading-snug text-muted-foreground">
+                  <span className="de text-[22px] font-semibold leading-none" lang="de">{MODE_LABEL[mode]}</span>
+                  <span className="text-[15px] leading-relaxed text-foreground-soft">
                     {MODE_BLURB[mode]}
                   </span>
                 </span>
@@ -137,10 +137,10 @@ export function Home() {
             >
               <span aria-hidden className="h-11 w-[3px] shrink-0 bg-rule-strong opacity-40" />
               <span className="flex min-w-0 flex-1 flex-col gap-1">
-                <span className="de text-[22px] leading-none" lang="de">
+                <span className="de text-[22px] font-semibold leading-none" lang="de">
                   Konjugation schreiben
                 </span>
-                <span className="text-[14px] leading-snug text-muted-foreground">
+                <span className="text-[14px] leading-snug text-foreground-soft">
                   Write out a whole paradigm, six forms at once, corrected cell by cell.
                 </span>
               </span>

@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
  */
 function Diff({ parts }: { parts: DiffPart[] }) {
   return (
-    <span className="de text-[clamp(1.35rem,5.5vw,1.9rem)] leading-tight">
+    <span className="de text-[clamp(1.35rem,5.5vw,1.9rem)] font-semibold leading-tight">
       {parts.map((part, index) => {
         if (part.op === 'same') return <span key={index}>{part.text}</span>
         if (part.op === 'extra') {
@@ -62,7 +62,7 @@ export function Correction({
           {showDiff ? (
             <Diff parts={result.diff} />
           ) : (
-            <span className="de text-[clamp(1.35rem,5.5vw,1.9rem)] leading-tight">
+            <span className="de text-[clamp(1.35rem,5.5vw,1.9rem)] font-semibold leading-tight">
               {question.kind === 'choice' ? answerLabel(question) : result.expected}
             </span>
           )}
@@ -76,11 +76,11 @@ export function Correction({
         </p>
       )}
 
-      {result.hint && <p className="text-[15px] leading-snug text-muted-foreground">{result.hint}</p>}
+      {result.hint && <p className="text-[15px] leading-snug text-foreground-soft">{result.hint}</p>}
 
       <ul className="flex flex-col gap-1.5">
         {question.rules.map((rule) => (
-          <li key={rule} className="flex gap-2.5 text-[15px] leading-snug">
+          <li key={rule} className="flex gap-2.5 text-[15px] leading-relaxed">
             <span aria-hidden className="select-none pt-[3px] text-[12px] text-muted-foreground">
               §
             </span>
@@ -99,7 +99,7 @@ export function Correction({
       )}
 
       {question.note && (
-        <p className="border-t border-rule pt-3 text-[14px] leading-snug text-muted-foreground">
+        <p className="border-t border-rule pt-3 text-[14px] leading-snug text-foreground-soft">
           {question.note}
         </p>
       )}

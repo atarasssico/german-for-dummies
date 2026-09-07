@@ -25,6 +25,7 @@
     --font-serif: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
     --font-heading: var(--font-sans);
 
+    --color-foreground-soft: var(--foreground-soft);
     --color-gender-m: var(--gender-m);
     --color-gender-f: var(--gender-f);
     --color-gender-n: var(--gender-n);
@@ -77,27 +78,30 @@
 :root {
     /* paper and ink */
     --background: #fbfbf9;
-    --foreground: #191b1e;
+    /* Three text tones, not two. Ink for the payload, soft for prose that has
+       to be read, muted for metadata only. */
+    --foreground: #14171a;
+    --foreground-soft: #3f464e;
     --card: #ffffff;
-    --card-foreground: #191b1e;
+    --card-foreground: #14171a;
     --popover: #ffffff;
-    --popover-foreground: #191b1e;
-    --primary: #191b1e;
+    --popover-foreground: #14171a;
+    --primary: #14171a;
     --primary-foreground: #fbfbf9;
     --secondary: #f1f1ec;
-    --secondary-foreground: #191b1e;
+    --secondary-foreground: #14171a;
     --muted: #f1f1ec;
-    --muted-foreground: #6a6f77;
+    --muted-foreground: #626a74;
     --accent: #ecece6;
-    --accent-foreground: #191b1e;
+    --accent-foreground: #14171a;
     --destructive: #a32a16;
     --border: #dcdcd5;
     --input: #dcdcd5;
-    --ring: #191b1e;
+    --ring: #14171a;
 
     /* the two rule weights the ledger is built from */
     --rule: #dcdcd5;
-    --rule-strong: #191b1e;
+    --rule-strong: #14171a;
 
     /* gender: the whole colour system */
     --gender-m: #2f62c4;
@@ -112,23 +116,24 @@
     --chart-2: var(--gender-f);
     --chart-3: var(--gender-n);
     --chart-4: #6a6f77;
-    --chart-5: #191b1e;
+    --chart-5: #14171a;
 
     --radius: 2px;
 
     --sidebar: #f1f1ec;
-    --sidebar-foreground: #191b1e;
-    --sidebar-primary: #191b1e;
+    --sidebar-foreground: #14171a;
+    --sidebar-primary: #14171a;
     --sidebar-primary-foreground: #fbfbf9;
     --sidebar-accent: #ecece6;
-    --sidebar-accent-foreground: #191b1e;
+    --sidebar-accent-foreground: #14171a;
     --sidebar-border: #dcdcd5;
-    --sidebar-ring: #191b1e;
+    --sidebar-ring: #14171a;
 }
 
 .dark {
     --background: #131518;
-    --foreground: #e8eaec;
+    --foreground: #eceef1;
+    --foreground-soft: #b9bfc7;
     --card: #1a1d21;
     --card-foreground: #e8eaec;
     --popover: #1a1d21;
@@ -138,7 +143,7 @@
     --secondary: #23262b;
     --secondary-foreground: #e8eaec;
     --muted: #23262b;
-    --muted-foreground: #9aa0a9;
+    --muted-foreground: #8d949e;
     --accent: #2a2e34;
     --accent-foreground: #e8eaec;
     --destructive: #e0705a;
@@ -224,15 +229,24 @@
 }
 
 @layer components {
-    /* The eyebrow that labels every task. Archivo, tracked out, small. */
+    /*
+     * The eyebrow labels every section and every task. It used to be muted grey,
+     * which made the page's own structure the faintest thing on it. Ink plus
+     * weight gives the layout a visible spine without shouting.
+     */
     .eyebrow {
-        @apply text-[13px] font-medium uppercase tracking-[0.12em] text-muted-foreground;
+        @apply text-[13px] font-semibold uppercase tracking-[0.1em] text-foreground;
+    }
+
+    /* Metadata beside an eyebrow: counts, units, percentages. */
+    .eyebrow-meta {
+        @apply text-[13px] font-medium uppercase tracking-[0.1em] text-muted-foreground;
     }
 
     /* German text is set as a dictionary headword. */
     .de {
         font-family: var(--font-serif);
-        font-variation-settings: 'wght' 500;
+        font-weight: 500;
         letter-spacing: -0.01em;
     }
 

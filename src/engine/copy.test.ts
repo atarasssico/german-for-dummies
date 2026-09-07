@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { PREP_GROUP_LABEL } from '@/data/prepositions'
 import { MODE_BLURB, MODES, buildQuestion, poolFor } from './questions'
 import { DEFAULT_SETTINGS } from './questions'
 
@@ -42,6 +43,24 @@ describe('interface copy', () => {
         }
       }
     }
+  })
+
+  it('labels its sections in German', () => {
+    for (const label of Object.values(PREP_GROUP_LABEL)) {
+      expect(label, label).not.toMatch(/\b(always|or|and|the)\b/i)
+    }
+  })
+
+  it('keeps three separated text tones rather than one flat grey', () => {
+    // The flatness this guards: 103 uses of one muted grey against 27 of ink,
+    // and a single font weight across the whole app.
+    const css = readFileSync('src/index.css', 'utf8')
+    for (const token of ['--foreground:', '--foreground-soft:', '--muted-foreground:']) {
+      expect(css, token).toContain(token)
+    }
+    // Section labels carry ink and weight; they are the page's structure.
+    expect(css).toMatch(/\.eyebrow\s*\{[^}]*font-semibold/)
+    expect(css).toMatch(/\.eyebrow\s*\{[^}]*text-foreground\b/)
   })
 
   it('asks its questions in German', () => {
