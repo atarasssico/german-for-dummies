@@ -12,7 +12,7 @@ import type { PrepGroup } from '@/data/prepositions'
 import { POSITION_PAIRS, VALENCY } from '@/data/valency'
 import type { Valency } from '@/data/valency'
 import { VERBS } from '@/data/verbs'
-import type { Gender, Kasus, Numerus, Slot } from '@/engine/grammar'
+import type { Gender, Kasus, Level, Numerus, Slot } from '@/engine/grammar'
 import {
   KASUS, KASUS_LABEL, KASUS_QUESTION, adjEnding, determiner, determinerForm, nounForm, nounPhrase,
 } from '@/engine/grammar'
@@ -20,7 +20,6 @@ import { withinLevel } from '@/engine/questions'
 import { GENDER_FILL, GENDER_ON, GENDER_VAR, genderTint } from '@/lib/gender'
 import { GROUP_KASUS, KASUS_FILL, KASUS_ON, KASUS_VAR, kasusTint } from '@/lib/kasus'
 import { KasusBar, KasusName } from '@/components/KasusLabel'
-import { useProgress } from '@/store/progress'
 import { cn } from '@/lib/utils'
 
 const SLOTS: Slot[] = ['m', 'f', 'n', 'pl']
@@ -379,24 +378,38 @@ function NounLookup() {
 
 /* ------------------------------------------------------------- verb list */
 
+const LEVEL_OPTIONS: Array<Level | 'alle'> = ['alle', 'A1', 'A2', 'B1', 'B2', 'C1']
+
 function VerbList() {
-  const { settings } = useProgress()
   const [query, setQuery] = useState('')
-  const [onlyIrregular, setOnlyIrregular] = useState(true)
+  // A reference is for looking things up, including words above your level, so
+  // nothing is hidden unless you ask. The practice level cap stays in Settings
+  // where it belongs, governing the drills.
+  const [level, setLevel] = useState<Level | 'alle'>('alle')
+  const [onlyIrregular, setOnlyIrregular] = useState(false)
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase()
     return VERBS.filter((v) => {
-      if (!withinLevel(v.level, settings.level)) return false
+      if (level !== 'alle' && !withinLevel(v.level, level)) return false
       if (onlyIrregular && v.class === 'weak') return false
       if (!q) return true
       return v.infinitive.toLowerCase().includes(q) || v.en.toLowerCase().includes(q)
     })
-  }, [query, onlyIrregular, settings.level])
+  }, [query, onlyIrregular, level])
+
+  const filters = [
+    level !== 'alle' ? `bis ${level}` : null,
+    onlyIrregular ? 'nur unregelmäßige' : null,
+    query.trim() ? `Suche „${query.trim()}“` : null,
+  ].filter((f): f is string => Boolean(f))
 
   return (
     <section className="flex flex-col gap-4">
-      <LedgerHead label="Verben" right={`${matches.length} von ${VERBS.length}`} />
+      <LedgerHead
+        label="Verben"
+        right={filters.length > 0 ? `${matches.length} von ${VERBS.length}` : `${VERBS.length} Verben`}
+      />
 
       <div className="flex flex-col gap-3">
         <label className="flex items-center gap-3 border-b border-rule pb-2">
@@ -412,17 +425,55 @@ function VerbList() {
             className="de w-full border-b border-transparent bg-transparent text-[19px] outline-none focus-visible:border-foreground placeholder:text-foreground-soft/50"
           />
         </label>
-        <button
-          type="button"
-          onClick={() => setOnlyIrregular((v) => !v)}
-          aria-pressed={onlyIrregular}
-          className={cn(
-            'h-9 w-fit border px-3 text-[16px] transition-colors',
-            onlyIrregular ? 'border-rule-strong bg-foreground text-background' : 'border-rule hover:bg-secondary',
-          )}
-        >
-          Nur unregelmäßige
-        </button>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          {LEVEL_OPTIONS.map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => setLevel(option)}
+              aria-pressed={level === option}
+              className={cn(
+                'h-10 border px-3 text-[16px] transition-colors',
+                level === option
+                  ? 'border-rule-strong bg-foreground text-background'
+                  : 'border-rule hover:bg-secondary',
+              )}
+            >
+              {option}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => setOnlyIrregular((v) => !v)}
+            aria-pressed={onlyIrregular}
+            className={cn(
+              'h-10 border px-3 text-[16px] transition-colors',
+              onlyIrregular
+                ? 'border-rule-strong bg-foreground text-background'
+                : 'border-rule hover:bg-secondary',
+            )}
+          >
+            Nur unregelmäßige
+          </button>
+        </div>
+
+        {filters.length > 0 && (
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[16px] text-foreground-soft">
+            <span>Gefiltert: {filters.join(' · ')}.</span>
+            <button
+              type="button"
+              onClick={() => {
+                setLevel('alle')
+                setOnlyIrregular(false)
+                setQuery('')
+              }}
+              className="font-medium text-foreground underline underline-offset-2 hover:no-underline"
+            >
+              Alle {VERBS.length} zeigen
+            </button>
+          </p>
+        )}
       </div>
 
       <ul className="long-list flex flex-col">
@@ -459,10 +510,10 @@ function VerbList() {
 const GROUP_ORDER: PrepGroup[] = ['akk', 'dat', 'wechsel', 'gen']
 
 function PrepositionList() {
-  const { settings } = useProgress()
+  // Every preposition, not only the ones at your practice level.
   const groups = GROUP_ORDER.map((group) => ({
     group,
-    items: PREPOSITIONS.filter((p) => p.group === group && withinLevel(p.level, settings.level)),
+    items: PREPOSITIONS.filter((p) => p.group === group),
   })).filter((g) => g.items.length > 0)
 
   return (
@@ -615,8 +666,7 @@ function ValencyRow({ entry }: { entry: Valency }) {
 }
 
 function ValencyList() {
-  const { settings } = useProgress()
-  const allowed = VALENCY.filter((v) => withinLevel(v.level, settings.level))
+  const allowed = VALENCY
 
   const sections: Array<{ label: string; blurb?: string; kasus?: Kasus; items: Valency[] }> = [
     {

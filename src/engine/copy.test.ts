@@ -63,6 +63,14 @@ describe('interface copy', () => {
     expect(css).toMatch(/\.eyebrow\s*\{[^}]*text-foreground\b/)
   })
 
+  it('does not cap the reference tables by the practice level', () => {
+    // The reference is for looking things up, including words above your level.
+    // Capping it by the drill setting hid 25 verbs, 13 prepositions and 29
+    // valency entries with nothing on screen to say why.
+    const src = readFileSync('src/routes/Reference.tsx', 'utf8')
+    expect(src).not.toContain('settings.level')
+  })
+
   it('asks its questions in German', () => {
     const settings = { ...DEFAULT_SETTINGS, level: 'C1' as const }
     const leads = new Set<string>()

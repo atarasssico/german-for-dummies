@@ -257,21 +257,24 @@ export function Paradigm() {
 }
 
 function VerbPicker({ onPick }: { onPick: (id: string) => void }) {
-  const { settings } = useProgress()
   const [query, setQuery] = useState('')
 
+  // Any verb is pickable. With no search the irregulars come first, since they
+  // are what a paradigm writeout is for, but a search reaches all of them.
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase()
-    const pool = VERBS.filter((v) => withinLevel(v.level, settings.level))
     const scored = q
-      ? pool.filter((v) => v.infinitive.toLowerCase().includes(q) || v.en.toLowerCase().includes(q))
-      : pool.filter((v) => v.class !== 'weak')
-    return scored.slice(0, 40)
-  }, [query, settings.level])
+      ? VERBS.filter((v) => v.infinitive.toLowerCase().includes(q) || v.en.toLowerCase().includes(q))
+      : VERBS.filter((v) => v.class !== 'weak')
+    return { list: scored.slice(0, 60), total: scored.length }
+  }, [query])
 
   return (
     <div className="flex flex-col gap-5 pt-4">
-      <LedgerHead label="Verb wählen" right={`${VERBS.length} Verben`} />
+      <LedgerHead
+        label="Verb wählen"
+        right={query.trim() ? `${matches.total} Treffer` : `${VERBS.length} Verben`}
+      />
 
       <label className="flex items-center gap-3 border-b border-rule pb-2">
         <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -287,13 +290,13 @@ function VerbPicker({ onPick }: { onPick: (id: string) => void }) {
         />
       </label>
 
-      {matches.length === 0 ? (
+      {matches.list.length === 0 ? (
         <p className="py-6 text-base text-foreground-soft">
           No verb matches “{query}”. Try the infinitive, or the English.
         </p>
       ) : (
         <ul className="flex flex-col">
-          {matches.map((verb) => (
+          {matches.list.map((verb) => (
             <li key={verb.id} className="border-b border-rule">
               <button
                 type="button"

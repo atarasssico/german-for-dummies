@@ -124,6 +124,23 @@ npm run build      # typecheck, bundle, generate the service worker
 npm run icons      # regenerate the PWA icons from geometry
 ```
 
+## Why these counts
+
+The datasets are curated, not exhaustive. German has thousands of verbs; this
+has 228, chosen to cover what the trainers need:
+
+| | Count | What it is |
+| --- | --- | --- |
+| Verbs | 228 | 3 auxiliaries, 6 modals, 140 strong, 11 mixed, 68 weak. Every strong verb in the common ablaut classes, the separables built on them, and the weak verbs the valency and drill examples rely on |
+| Nouns | 285 | Across 14 topics, weighted to A1 and A2, including the 17 weak masculines and the Name/Herz oddities |
+| Prepositions | 47 | All of them worth knowing: 8 accusative, 14 dative, 9 two-way, 16 genitive |
+| Valency entries | 116 | 145 frames, of which 24 are verbs whose meaning changes with the frame |
+
+Level tags (A1 to C1) exist to size a practice session, and they cap the drill
+pools through Settings. They do **not** filter the reference tables: those show
+everything, with their own visible filters, because looking a word up is not
+the same as practising it.
+
 ## Adding words
 
 - **Nouns** `src/data/nouns.ts`, one tuple per noun:
