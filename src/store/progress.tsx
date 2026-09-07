@@ -44,9 +44,17 @@ export function streakOf(days: Record<string, DayRecord>, today = todayKey()): n
   return count
 }
 
+/**
+ * Whether the browser will promise not to evict the data.
+ * 'granted'     the promise was given.
+ * 'denied'      the browser supports it but has not granted it yet.
+ * 'unsupported' the browser has no such API. Safari is the notable one, and it
+ *               also clears storage for sites unopened for 7 days.
+ */
+export type Persistence = 'granted' | 'denied' | 'unsupported'
+
 export interface StorageStatus {
-  /** The browser promised not to evict this data. */
-  persisted: boolean
+  persistence: Persistence
   /** Bytes your progress itself takes up. Not the origin total, which is
    *  dominated by the precached offline assets and would be misleading here. */
   progressBytes: number
@@ -112,7 +120,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const [progress, setProgress] = useState<Progress>(DEFAULT_PROGRESS)
   const [ready, setReady] = useState(false)
   const [storage, setStorage] = useState<StorageStatus>({
-    persisted: false,
+    persistence: 'denied',
     progressBytes: 0,
     recovered: false,
   })
@@ -125,18 +133,24 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     setReady(true)
   }, [])
 
-  // Ask Chrome to treat this data as persistent, which exempts it from
-  // eviction when the device runs low on space.
+  // Ask the browser to treat this data as persistent, which exempts it from
+  // eviction when the device runs low on space. Chrome, Edge and Firefox
+  // implement this; Safari does not, and says so rather than pretending.
   useEffect(() => {
     let cancelled = false
     async function claim() {
-      if (!navigator.storage?.persist) return
+      if (typeof navigator.storage?.persist !== 'function') {
+        if (!cancelled) setStorage((prev) => ({ ...prev, persistence: 'unsupported' }))
+        return
+      }
       try {
         const already = (await navigator.storage.persisted?.()) ?? false
-        const persisted = already || (await navigator.storage.persist())
-        if (!cancelled) setStorage((prev) => ({ ...prev, persisted }))
+        const granted = already || (await navigator.storage.persist())
+        if (!cancelled) {
+          setStorage((prev) => ({ ...prev, persistence: granted ? 'granted' : 'denied' }))
+        }
       } catch {
-        // Storage manager unavailable; the app works, it is just evictable.
+        if (!cancelled) setStorage((prev) => ({ ...prev, persistence: 'unsupported' }))
       }
     }
     void claim()

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { LedgerHead } from '@/components/Ledger'
 import { snapshotFilename } from '@/lib/backup'
+import type { Persistence } from '@/store/progress'
 import { TOPICS } from '@/data/nouns'
 import { TENSES, TENSE_LABEL } from '@/engine/conjugate'
 import type { Tense } from '@/engine/conjugate'
@@ -20,6 +21,22 @@ import { useProgress } from '@/store/progress'
 import { cn } from '@/lib/utils'
 
 const SESSION_LENGTHS = [8, 12, 20, 30]
+
+const PERSISTENCE_LABEL: Record<Persistence, string> = {
+  granted: 'gesichert',
+  denied: 'noch nicht gesichert',
+  unsupported: 'nicht möglich',
+}
+
+/** Written per capability rather than per browser name, so it is true everywhere. */
+const PERSISTENCE_NOTE: Record<Persistence, string> = {
+  granted:
+    'Your browser has marked it as persistent, so it survives even when the device runs low on space.',
+  denied:
+    'Your browser has not marked it as persistent yet. In Chrome, Edge and Firefox that happens once you have used the app a few times, or as soon as you install it.',
+  unsupported:
+    'Your browser does not offer persistent storage. Safari in particular deletes stored data for any site you have not opened in 7 days. Installing this to your home screen gives it its own counter of days used, which avoids that.',
+}
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} bytes`
@@ -269,14 +286,12 @@ export function SettingsPage() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <LedgerHead label="Datensicherung" right={storage.persisted ? 'gesichert' : 'nicht gesichert'} />
+        <LedgerHead label="Datensicherung" right={PERSISTENCE_LABEL[storage.persistence]} />
 
         <p className="max-w-prose text-[15px] leading-relaxed text-muted-foreground">
           Your progress lives in this browser only, and takes {formatBytes(storage.progressBytes)}.{' '}
-          {storage.persisted
-            ? 'Chrome has marked it as persistent, so it survives even when the disk runs low.'
-            : 'Chrome has not marked it as persistent yet. That happens once you have used the app a few times, or as soon as you install it.'}{' '}
-          Clearing site data deletes it either way, so export a copy now and then.
+          {PERSISTENCE_NOTE[storage.persistence]} Clearing site data deletes it either way, so export
+          a copy now and then.
         </p>
 
         {storage.recovered && (

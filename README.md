@@ -95,8 +95,12 @@ Three things keep that from being fragile:
 - **A last-known-good copy.** Every write first copies the previous value to a
   backup key. Text that fails to parse is quarantined under a third key instead
   of being overwritten, and the backup is loaded instead.
-- **Persistent storage.** The app calls `navigator.storage.persist()`, which in
-  Chrome exempts the data from eviction when the disk runs low.
+- **Persistent storage.** The app calls `navigator.storage.persist()`, which
+  exempts the data from eviction when the disk runs low. Settings reports the
+  real state rather than assuming a browser: granted, not granted yet, or
+  unsupported. Safari implements no such API and additionally clears storage
+  for sites unopened for 7 days, so it is told to install to the home screen,
+  which gets its own counter of days used.
 
 What still deletes it: clearing site data, deleting an installed copy, or a
 different browser or device. So Settings has **Exportieren**, which downloads
