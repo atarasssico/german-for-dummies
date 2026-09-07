@@ -76,7 +76,7 @@ export function Home() {
         <Button
           asChild
           size="lg"
-          className="h-12 w-full justify-between px-5 text-[16px] sm:w-auto sm:min-w-[280px]"
+          className="h-12 w-full justify-between px-5 text-[17px] sm:w-auto sm:min-w-[280px]"
         >
           <Link to={`/ueben/${nextMode}`}>
             <span>{started ? `Weiter mit ${MODE_LABEL[nextMode]}` : `Anfangen mit ${MODE_LABEL[nextMode]}`}</span>
@@ -116,7 +116,7 @@ export function Home() {
                 )}
                 <span className="flex min-w-0 flex-1 flex-col gap-1">
                   <span className="de text-[22px] font-semibold leading-none" lang="de">{MODE_LABEL[mode]}</span>
-                  <span className="text-[15px] leading-relaxed text-foreground-soft">
+                  <span className="text-[16px] leading-relaxed text-foreground-soft">
                     {MODE_BLURB[mode]}
                   </span>
                 </span>
@@ -124,7 +124,7 @@ export function Home() {
                   <span className="text-[20px] leading-none tabular">
                     {summary.due.toLocaleString('de-DE')}
                   </span>
-                  <span className="text-[13px] uppercase tracking-[0.1em] text-muted-foreground tabular">
+                  <span className="text-[15px] uppercase tracking-[0.1em] text-muted-foreground tabular">
                     {Math.round(summary.progress * 100)} % gelernt
                   </span>
                 </span>
@@ -149,7 +149,7 @@ export function Home() {
                 <span className="de text-[22px] font-semibold leading-none" lang="de">
                   Konjugation schreiben
                 </span>
-                <span className="text-[14px] leading-snug text-foreground-soft">
+                <span className="text-[16px] leading-snug text-foreground-soft">
                   Write out a whole paradigm, six forms at once, corrected cell by cell.
                 </span>
               </span>

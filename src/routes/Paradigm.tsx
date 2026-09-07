@@ -99,12 +99,12 @@ export function Paradigm() {
         <div className="flex flex-col gap-2">
           <span className="eyebrow">Konjugation schreiben</span>
           <h1 className="de text-[clamp(2rem,9vw,3rem)] font-semibold leading-none" lang="de">{verb.infinitive}</h1>
-          <p className="text-[15px] text-foreground-soft">
+          <p className="text-[16px] text-foreground-soft">
             {verb.en}
             {verb.class !== 'weak' && (
               <>
                 <span className="px-2 text-rule-strong">/</span>
-                <span className="de text-[16px]">
+                <span className="de text-[17px]">
                   {praetBase(verb)} · {verb.aux === 'sein' ? 'ist' : 'hat'} {partizip2(verb)}
                 </span>
               </>
@@ -140,7 +140,7 @@ export function Paradigm() {
               aria-selected={tense === option}
               onClick={() => setTense(option)}
               className={cn(
-                'shrink-0 border-b-[1.5px] px-3 py-2 text-[14px] tracking-wide transition-colors',
+                'shrink-0 border-b-[1.5px] px-3 py-2 text-[16px] tracking-wide transition-colors',
                 tense === option
                   ? 'border-rule-strong font-medium text-foreground'
                   : 'border-transparent text-muted-foreground hover:text-foreground',
@@ -152,7 +152,7 @@ export function Paradigm() {
         </div>
       </div>
 
-      <p className="border-y border-rule py-2.5 text-[14px] text-foreground-soft">
+      <p className="border-y border-rule py-2.5 text-[16px] text-foreground-soft">
         {TENSE_LABEL[tense]}: {TENSE_HINT[tense]}.
         {tense === 'konjunktiv2' && prefersWuerde(verb) && (
           <> Same as the Präteritum for this verb, so speakers use würde + Infinitiv.</>
@@ -173,7 +173,7 @@ export function Paradigm() {
             <div key={person} className="flex items-baseline gap-3 border-b border-rule py-2.5">
               <label
                 htmlFor={`cell-${person}`}
-                className="w-[5.5rem] shrink-0 text-[15px] font-medium text-foreground-soft"
+                className="w-[5.5rem] shrink-0 text-[16px] font-medium text-foreground-soft"
               >
                 {tense === 'imperativ' ? (person === 'sie' ? 'Sie' : person) : PERSON_LABEL[person]}
               </label>
@@ -201,7 +201,7 @@ export function Paradigm() {
                   )}
                 />
                 {checked && !right && (
-                  <span className="de text-[16px] font-semibold">{result?.expected}</span>
+                  <span className="de text-[17px] font-semibold">{result?.expected}</span>
                 )}
               </div>
               {checked && (
@@ -245,7 +245,7 @@ export function Paradigm() {
       </form>
 
       {verb.note && (
-        <p className="border-t border-rule pt-3 text-[14px] leading-snug text-foreground-soft">
+        <p className="border-t border-rule pt-3 text-[16px] leading-snug text-foreground-soft">
           {verb.note}
         </p>
       )}
@@ -299,7 +299,7 @@ function VerbPicker({ onPick }: { onPick: (id: string) => void }) {
               >
                 <span className="de min-w-0 flex-1 text-[19px]">{verb.infinitive}</span>
                 <PrincipalParts verb={verb} />
-                <span className="w-9 shrink-0 text-right text-[13px] uppercase tracking-[0.08em] text-muted-foreground">
+                <span className="w-9 shrink-0 text-right text-[15px] uppercase tracking-[0.08em] text-muted-foreground">
                   {verb.level}
                 </span>
               </button>
@@ -313,10 +313,10 @@ function VerbPicker({ onPick }: { onPick: (id: string) => void }) {
 
 export function PrincipalParts({ verb, className }: { verb: Verb; className?: string }) {
   if (verb.class === 'weak') {
-    return <span className={cn('text-[14px] text-foreground-soft', className)}>regelmäßig</span>
+    return <span className={cn('text-[16px] text-foreground-soft', className)}>regelmäßig</span>
   }
   return (
-    <span className={cn('de hidden text-[16px] text-foreground-soft sm:inline', className)}>
+    <span className={cn('de hidden text-[17px] text-foreground-soft sm:inline', className)}>
       {praetBase(verb)} · {verb.aux === 'sein' ? 'ist' : 'hat'} {partizip2(verb)}
     </span>
   )

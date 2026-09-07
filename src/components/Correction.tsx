@@ -92,12 +92,12 @@ export function Correction({
         </p>
       )}
 
-      {result.hint && <p className="text-[15px] leading-snug text-foreground-soft">{result.hint}</p>}
+      {result.hint && <p className="text-[16px] leading-snug text-foreground-soft">{result.hint}</p>}
 
       <ul className="flex flex-col gap-1.5">
         {question.rules.map((rule) => (
-          <li key={rule} className="flex gap-2.5 text-[15px] leading-relaxed">
-            <span aria-hidden className="select-none pt-[3px] text-[12px] text-muted-foreground">
+          <li key={rule} className="flex gap-2.5 text-[16px] leading-relaxed">
+            <span aria-hidden className="select-none pt-[3px] text-[14px] text-muted-foreground">
               §
             </span>
             <span>{rule}</span>
@@ -108,14 +108,14 @@ export function Correction({
       {question.revealGender && <GenderChip gender={question.revealGender} />}
 
       {question.example && (
-        <p className="flex flex-col gap-0.5 border-t border-rule pt-3 text-[15px]">
+        <p className="flex flex-col gap-0.5 border-t border-rule pt-3 text-[16px]">
           <span className="de text-[17px]">{question.example.de}</span>
           <span className="text-muted-foreground italic">{question.example.en}</span>
         </p>
       )}
 
       {question.note && (
-        <p className="border-t border-rule pt-3 text-[14px] leading-snug text-foreground-soft">
+        <p className="border-t border-rule pt-3 text-[16px] leading-snug text-foreground-soft">
           {question.note}
         </p>
       )}

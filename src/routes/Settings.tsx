@@ -69,7 +69,7 @@ function Chip({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'h-9 border px-3 text-[14px] transition-colors',
+        'h-9 border px-3 text-[16px] transition-colors',
         active ? 'border-rule-strong bg-foreground text-background' : 'border-rule hover:bg-secondary',
         className,
       )}
@@ -95,10 +95,10 @@ function SettingRow({
   return (
     <div className="flex items-start justify-between gap-6 border-b border-rule py-3.5">
       <div className="flex flex-col gap-0.5">
-        <Label htmlFor={id} className="text-[16px] font-semibold">
+        <Label htmlFor={id} className="text-[17px] font-semibold">
           {title}
         </Label>
-        <p className="max-w-prose text-[14px] leading-relaxed text-foreground-soft">{detail}</p>
+        <p className="max-w-prose text-[16px] leading-relaxed text-foreground-soft">{detail}</p>
       </div>
       <Switch id={id} checked={checked} onCheckedChange={onChange} className="mt-1 shrink-0" />
     </div>
@@ -145,12 +145,12 @@ export function SettingsPage() {
             </Chip>
           ))}
         </div>
-        <p className="text-[14px] text-foreground-soft">{LEVEL_NOTE[settings.level]}</p>
+        <p className="text-[16px] text-foreground-soft">{LEVEL_NOTE[settings.level]}</p>
         <ul className="flex flex-col">
           {poolSizes.map(({ mode, size }) => (
             <li
               key={mode}
-              className="flex items-baseline justify-between border-b border-rule py-2 text-[15px]"
+              className="flex items-baseline justify-between border-b border-rule py-2 text-[16px]"
             >
               <span>{MODE_LABEL[mode]}</span>
               <span className="tabular text-muted-foreground">{size.toLocaleString('de-DE')}</span>
@@ -176,7 +176,7 @@ export function SettingsPage() {
 
       <section className="flex flex-col gap-4">
         <LedgerHead label="Zeitformen" right={`${settings.tenses.length} von ${TENSES.length}`} />
-        <p className="text-[14px] text-foreground-soft">
+        <p className="text-[16px] text-foreground-soft">
           Which tenses the verb drill asks for. The paradigm writer always offers all ten.
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -198,7 +198,7 @@ export function SettingsPage() {
 
       <section className="flex flex-col gap-4">
         <LedgerHead label="Determinative" right={`${settings.determiners.length} ausgewählt`} />
-        <p className="text-[14px] text-foreground-soft">
+        <p className="text-[16px] text-foreground-soft">
           Which determiners can appear in the declension drill.
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -288,14 +288,14 @@ export function SettingsPage() {
       <section className="flex flex-col gap-4">
         <LedgerHead label="Datensicherung" right={PERSISTENCE_LABEL[storage.persistence]} />
 
-        <p className="max-w-prose text-[15px] leading-relaxed text-foreground-soft">
+        <p className="max-w-prose text-[16px] leading-relaxed text-foreground-soft">
           Your progress lives in this browser only, and takes {formatBytes(storage.progressBytes)}.{' '}
           {PERSISTENCE_NOTE[storage.persistence]} Clearing site data deletes it either way, so export
           a copy now and then.
         </p>
 
         {storage.recovered && (
-          <p className="border-l-[3px] border-wrong pl-3 text-[15px] leading-snug">
+          <p className="border-l-[3px] border-wrong pl-3 text-[16px] leading-snug">
             The stored file could not be read on the last load, so an earlier copy was restored. The
             unreadable version was kept aside rather than deleted.
           </p>
@@ -345,12 +345,12 @@ export function SettingsPage() {
         />
 
         {notice && (
-          <p aria-live="polite" className="border-l-[3px] border-rule-strong pl-3 text-[15px] leading-snug">
+          <p aria-live="polite" className="border-l-[3px] border-rule-strong pl-3 text-[16px] leading-snug">
             {notice}
           </p>
         )}
 
-        <p className="max-w-prose text-[15px] leading-relaxed text-foreground-soft">
+        <p className="max-w-prose text-[16px] leading-relaxed text-foreground-soft">
           Merging keeps whichever copy of each card was reviewed more recently, so your phone and
           your desktop can be merged in either order with the same result. Importing the same file
           twice changes nothing.
@@ -362,7 +362,7 @@ export function SettingsPage() {
           label="Zurücksetzen"
           right={`${Object.keys(progress.cards).length.toLocaleString('de-DE')} Karten begonnen`}
         />
-        <p className="max-w-prose text-[15px] leading-relaxed text-foreground-soft">
+        <p className="max-w-prose text-[16px] leading-relaxed text-foreground-soft">
           Nothing here is automatic. Progress is only ever cleared when you clear it.
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -420,7 +420,7 @@ export function SettingsPage() {
         </Dialog>
       </section>
 
-      <p className="border-t border-rule pt-4 text-[14px] leading-relaxed text-foreground-soft">
+      <p className="border-t border-rule pt-4 text-[16px] leading-relaxed text-foreground-soft">
         Grammar generated from principal parts rather than typed out by hand, so every form comes
         from one rule in one place. A wrong form is a bug. Open an issue and it gets fixed for good.
       </p>

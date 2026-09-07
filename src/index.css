@@ -26,6 +26,10 @@
     --font-heading: var(--font-sans);
 
     --color-foreground-soft: var(--foreground-soft);
+    --color-kasus-nom: var(--kasus-nom);
+    --color-kasus-akk: var(--kasus-akk);
+    --color-kasus-dat: var(--kasus-dat);
+    --color-kasus-gen: var(--kasus-gen);
     --color-gender-m: var(--gender-m);
     --color-gender-f: var(--gender-f);
     --color-gender-n: var(--gender-n);
@@ -103,7 +107,23 @@
     --rule: #dcdcd5;
     --rule-strong: #14171a;
 
-    /* gender: the whole colour system */
+    /*
+     * Two colour systems, kept apart by hue and by role.
+     *
+     * Case is the primary one: it appears on nearly every screen, so the case
+     * name is always written in its own colour, and surfaces that belong to a
+     * case are washed with it. Chosen on hue axes the gender trio leaves free
+     * (teal, orange, violet, plum against blue, pink, green).
+     *
+     * Gender is the secondary one and only ever colours letters: the article,
+     * the noun, the rail beside them. So a coloured word is gender and a
+     * coloured label or surface is case, and neither hue has to be read twice.
+     */
+    --kasus-nom: #0d5b66;
+    --kasus-akk: #94430f;
+    --kasus-dat: #4e3a8e;
+    --kasus-gen: #7c2b6a;
+
     --gender-m: #2f62c4;
     --gender-f: #c4327a;
     --gender-n: #2e7d5b;
@@ -155,6 +175,11 @@
     --rule-strong: #6d737c;
 
     /* desaturated a step: saturated hues vibrate on a dark ground */
+    --kasus-nom: #4fb3c4;
+    --kasus-akk: #e08a52;
+    --kasus-dat: #a48ce8;
+    --kasus-gen: #dd7ac6;
+
     --gender-m: #7ba3f5;
     --gender-f: #ef7cb4;
     --gender-n: #56be91;
@@ -235,12 +260,12 @@
      * weight gives the layout a visible spine without shouting.
      */
     .eyebrow {
-        @apply text-[13px] font-semibold uppercase tracking-[0.1em] text-foreground;
+        @apply text-[14px] font-semibold uppercase tracking-[0.09em] text-foreground;
     }
 
     /* Metadata beside an eyebrow: counts, units, percentages. */
     .eyebrow-meta {
-        @apply text-[13px] font-medium uppercase tracking-[0.1em] text-muted-foreground;
+        @apply text-[14px] font-medium uppercase tracking-[0.09em] text-muted-foreground;
     }
 
     /* German text is set as a dictionary headword. */

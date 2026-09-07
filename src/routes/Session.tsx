@@ -14,6 +14,8 @@ import { MODES, MODE_LABEL, buildQuestion, poolFor } from '@/engine/questions'
 import { pickSession } from '@/engine/srs'
 import { useProgress } from '@/store/progress'
 import { GENDER_VAR, genderEdge, genderTint } from '@/lib/gender'
+import { KASUS_VAR, kasusTint } from '@/lib/kasus'
+import { KasusBar } from '@/components/KasusLabel'
 import { cn } from '@/lib/utils'
 
 type Phase = 'answering' | 'answered'
@@ -244,7 +246,7 @@ export function Session() {
               {question.focus}
             </p>
             {question.sub && (
-              <p className="pt-1.5 text-[14px] leading-snug text-foreground-soft">{question.sub}</p>
+              <p className="pt-1.5 text-[16px] leading-snug text-foreground-soft">{question.sub}</p>
             )}
           </Rail>
         </div>
@@ -264,22 +266,26 @@ export function Session() {
 
         {taskFirst ? (
           <div className="flex flex-col gap-2 border-t border-rule pt-5">
-            <span className="flex items-center gap-2 text-[13px] text-muted-foreground">
+            <span className="flex items-center gap-2 text-[15px] text-muted-foreground">
               <ArrowDown className="size-4 shrink-0" aria-hidden />
               {question.lead}
             </span>
-            <h1 className="de text-[clamp(1.8rem,8vw,2.75rem)] font-semibold leading-[1]" lang="de">
+            <h1
+              className="de text-[clamp(1.8rem,8vw,2.75rem)] font-semibold leading-[1]"
+              lang="de"
+              style={question.targetKasus ? { color: KASUS_VAR[question.targetKasus] } : undefined}
+            >
               {question.target}
             </h1>
             {question.targetHint && (
-              <p className="text-[16px] leading-snug text-foreground-soft">{question.targetHint}</p>
+              <p className="text-[17px] leading-snug text-foreground-soft">{question.targetHint}</p>
             )}
             {question.spec && question.spec.length > 0 && (
               <ul className="flex flex-wrap gap-1.5 pt-1">
                 {question.spec.map((item) => (
                   <li
                     key={item}
-                    className="border border-rule-strong/25 bg-secondary px-2.5 py-1 text-[13px] font-medium text-foreground-soft"
+                    className="border border-rule-strong/25 bg-secondary px-2.5 py-1 text-[15px] font-medium text-foreground-soft"
                   >
                     {item}
                   </li>
@@ -294,7 +300,7 @@ export function Session() {
               {question.lead}
             </h1>
             {question.targetHint && (
-              <p className="pl-6 text-[15px] leading-snug text-foreground-soft">{question.targetHint}</p>
+              <p className="pl-6 text-[16px] leading-snug text-foreground-soft">{question.targetHint}</p>
             )}
           </div>
         )}
@@ -355,18 +361,18 @@ export function Session() {
                 <button
                   type="button"
                   onClick={() => submit(choice.id)}
-                  style={
-                    isGender(choice.id)
-                      ? { background: genderTint(choice.id, 14) }
-                      : undefined
-                  }
+                  style={choiceSurface(choice.id)}
                   className="flex min-h-[64px] w-full items-center gap-4 px-3 py-3 text-left transition-colors hover:bg-secondary/60"
                 >
-                  <span
-                    aria-hidden
-                    className="h-9 w-[5px] shrink-0"
-                    style={{ background: choiceColour(choice.id) ?? 'var(--rule)' }}
-                  />
+                  {casesOfChoice(choice.id).length > 0 ? (
+                    <KasusBar cases={casesOfChoice(choice.id)} className="h-9" />
+                  ) : (
+                    <span
+                      aria-hidden
+                      className="h-9 w-[5px] shrink-0"
+                      style={{ background: choiceColour(choice.id) ?? 'var(--rule)' }}
+                    />
+                  )}
                   <span className="flex min-w-0 flex-col gap-0.5">
                     <span
                       className="de text-[24px] font-semibold leading-none"
@@ -375,7 +381,7 @@ export function Session() {
                       {choice.label}
                     </span>
                     {choice.sub && (
-                      <span className="text-[14px] leading-snug text-foreground-soft">
+                      <span className="text-[16px] leading-snug text-foreground-soft">
                         {choice.sub}
                       </span>
                     )}
@@ -421,7 +427,7 @@ export function Session() {
                     onClick={() => setPrepCase(option)}
                     aria-pressed={prepCase === option}
                     className={cn(
-                      'h-11 border px-4 text-[15px] tracking-wide transition-colors',
+                      'h-11 border px-4 text-[16px] tracking-wide transition-colors',
                       prepCase === option
                         ? 'border-rule-strong bg-foreground text-background'
                         : 'border-rule hover:bg-secondary',
@@ -457,11 +463,11 @@ export function Session() {
             ref={nextRef}
             onClick={advance}
             size="lg"
-            className="h-12 w-full justify-between px-5 text-[16px]"
+            className="h-12 w-full justify-between px-5 text-[17px]"
           >
             <span>{index + 1 === queue.length ? 'Fertig' : 'Weiter'}</span>
             <span className="flex items-center gap-2">
-              <span className="hidden text-[13px] uppercase tracking-[0.1em] opacity-60 sm:inline">
+              <span className="hidden text-[15px] uppercase tracking-[0.1em] opacity-60 sm:inline">
                 ⏎
               </span>
               <ArrowRight className="size-4" aria-hidden />
@@ -475,6 +481,34 @@ export function Session() {
 
 function isGender(id: string): id is Gender {
   return id === 'm' || id === 'f' || id === 'n'
+}
+
+/** Which cases a choice names, so the option can wear their colours. */
+function casesOfChoice(id: string): Kasus[] {
+  switch (id) {
+    case 'nom':
+    case 'akk':
+    case 'dat':
+    case 'gen':
+      return [id]
+    case 'dat+akk':
+      return ['dat', 'akk']
+    case 'akk+akk':
+      return ['akk']
+    case 'akk+gen':
+      return ['akk', 'gen']
+    case 'wechsel':
+      return ['akk', 'dat']
+    default:
+      return []
+  }
+}
+
+function choiceSurface(id: string): React.CSSProperties | undefined {
+  if (isGender(id)) return { background: genderTint(id, 14) }
+  const cases = casesOfChoice(id)
+  const first = cases[0]
+  return first ? { background: kasusTint(first, 11) } : undefined
 }
 
 function choiceColour(id: string): string | undefined {
@@ -546,8 +580,8 @@ function SessionSummary({
                 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-rule py-3"
               >
                 <span className="de min-w-0 flex-1 text-[18px]">{entry.prompt}</span>
-                <span className="de text-[16px] text-wrong line-through">{entry.given || '·'}</span>
-                <span className="de text-[16px]">{entry.expected}</span>
+                <span className="de text-[17px] text-wrong line-through">{entry.given || '·'}</span>
+                <span className="de text-[17px]">{entry.expected}</span>
               </li>
             ))}
           </ul>

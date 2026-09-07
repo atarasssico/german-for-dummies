@@ -15,8 +15,22 @@ DIN lettering tradition.
 
 ## Colour
 
-Gender is the only colour system, using the convention German textbooks already
-use so it transfers off the screen:
+Two systems, kept apart by hue and by role, so no colour has to be read twice.
+
+**Case is the primary system.** It appears on nearly every screen, so the case
+name is always written in its own colour and any surface belonging to a case is
+washed with it. Hues sit on axes the gender trio leaves free.
+
+| Token | Light | Dark | Means |
+| --- | --- | --- | --- |
+| `--kasus-nom` | `#0d5b66` | `#4fb3c4` | Nominativ |
+| `--kasus-akk` | `#94430f` | `#e08a52` | Akkusativ |
+| `--kasus-dat` | `#4e3a8e` | `#a48ce8` | Dativ |
+| `--kasus-gen` | `#7c2b6a` | `#dd7ac6` | Genitiv |
+
+**Gender is the secondary system** and only ever colours letters: the article,
+the noun, the rail beside them. So a coloured *word* is gender and a coloured
+*label or surface* is case.
 
 | Token | Light | Dark | Means |
 | --- | --- | --- | --- |
@@ -25,14 +39,33 @@ use so it transfers off the screen:
 | `--gender-n` | `#2e7d5b` | `#56be91` | das |
 | `--wrong` | `#8a6110` | `#d8a233` | a correction |
 
-Those three hues never mean anything else. Correct and wrong are carried by
-form first (a rule, a strike-through, a check) with amber as the only state
-colour, so no hue has to carry two meanings. Colour is never the only signal:
-gender is always named in words next to its swatch.
+Tints are derived from the one base hue with `color-mix` rather than stored as
+extra tokens, so there is a single value to change per category.
 
-Ground and ink: `#fbfbf9` on `#191b1e` in light, `#131518` on `#e8eaec` in
-dark. Two rule weights, `--rule` for row separators and `--rule-strong` for
-section heads, are what the whole layout is built from.
+Two rules learned by measuring rather than by eye:
+
+1. **A hue on a wash of itself cannot reach 4.5:1.** Both palettes are dark
+   enough that coloured text on even a 5% tint of the same hue fails AA. So
+   where a surface needs to be strongly coloured, it goes solid and the text
+   becomes the page ground: the declension table's case column and gender row,
+   and the gender chip, all work this way.
+2. **Muted grey must not sit on a tinted surface.** It passes on the page
+   ground at 5.3:1 and fails at about 3.8:1 on a 20% wash, so anything on a
+   tinted card uses the soft tone or ink instead.
+
+Both are verified by a script that walks every visible text node on nine pages
+in both themes and computes the real ratio, resolving `color-mix` and `oklab`
+through a canvas rather than parsing the string. Current state: zero AA
+failures across 1,314 nodes.
+
+Colour is never the only signal: the case is always named, the gender chip
+spells out `der maskulin`, and a correction carries a strike-through and an
+icon as well as amber.
+
+Ground and ink: `#fbfbf9` on `#14171a` in light, `#131518` on `#eceef1` in
+dark, with a third `--foreground-soft` tone for prose that has to be read.
+Two rule weights, `--rule` for row separators and `--rule-strong` for section
+heads, are what the layout is built from.
 
 ## Type
 
@@ -60,7 +93,7 @@ chrome, because chrome would only compete with the question.
 
 ## Signature element
 
-A 3px rail, coloured by grammatical gender, down the left of anything nominal:
+A 5px rail, coloured by grammatical gender, down the left of anything nominal:
 the drill prompt, the noun lookup, list rows. It is functional rather than
 decorative. After a week you read gender before you read the word. The same
 three bars are the wordmark and the app icon.

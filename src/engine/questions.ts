@@ -86,6 +86,8 @@ export interface Question {
   target?: string
   /** Clarifier under the target, e.g. the case question word. */
   targetHint?: string
+  /** The case the task is about, so the heading can be written in its colour. */
+  targetKasus?: Kasus
   /** What form the material is shown in, e.g. 'Nominativ' or 'Infinitiv'. */
   sourceLabel?: string
   /** Conditions on the answer, e.g. Singular, definite article, an adjective. */
@@ -354,6 +356,7 @@ function declensionQuestion(n: Noun, kasus: Kasus, s: GenSettings, rand: () => n
     sourceLabel: 'Nominativ Singular',
     target: `${KASUS_LABEL[kasus]} ${num === 'pl' ? 'Plural' : 'Singular'}`,
     targetHint: KASUS_QUESTION[kasus],
+    targetKasus: kasus,
     spec: [DET_HINT[det] ?? determiner(det).label, adj ? `Adjektiv: ${adj.word}` : null].filter(
       (item): item is string => Boolean(item),
     ),
@@ -559,6 +562,7 @@ function wechselQuestion(prepId: string, kasus: 'akk' | 'dat', rand: () => numbe
     sub: p.en,
     target: kasus === 'dat' ? 'Wo? Position' : 'Wohin? Richtung',
     targetHint: `${p.word} + Akkusativ oder Dativ?`,
+    targetKasus: kasus,
     expects: 'nur der bestimmte Artikel',
     cloze,
     answer: { text: det ?? '', alts: [] },

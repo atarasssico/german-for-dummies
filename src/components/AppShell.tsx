@@ -34,7 +34,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-dvh bg-background" translate="no">
       <a
         href="#inhalt"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:border focus:border-rule-strong focus:bg-background focus:px-3 focus:py-2 focus:text-[15px]"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:border focus:border-rule-strong focus:bg-background focus:px-3 focus:py-2 focus:text-[16px]"
       >
         Zum Inhalt springen
       </a>
@@ -52,7 +52,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   end={item.to === '/'}
                   className={({ isActive }) =>
                     cn(
-                      'pb-0.5 text-[15px] tracking-wide transition-colors',
+                      'pb-0.5 text-[16px] tracking-wide transition-colors',
                       isActive
                         ? 'border-b-[1.5px] border-rule-strong font-medium text-foreground'
                         : 'border-b-[1.5px] border-transparent text-muted-foreground hover:text-foreground',
@@ -87,7 +87,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   end={item.to === '/'}
                   className={({ isActive }) =>
                     cn(
-                      'flex min-h-[56px] flex-1 flex-col items-center justify-center gap-1 px-1 text-center text-[12px] leading-tight tracking-wide',
+                      'flex min-h-[56px] flex-1 flex-col items-center justify-center gap-1 px-1 text-center text-[14px] leading-tight tracking-wide',
                       isActive ? 'text-foreground' : 'text-muted-foreground',
                     )
                   }

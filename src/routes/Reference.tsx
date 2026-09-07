@@ -17,6 +17,8 @@ import {
 } from '@/engine/grammar'
 import { withinLevel } from '@/engine/questions'
 import { GENDER_VAR, genderTint } from '@/lib/gender'
+import { GROUP_KASUS, KASUS_VAR, kasusTint } from '@/lib/kasus'
+import { KasusBar, KasusName } from '@/components/KasusLabel'
 import { useProgress } from '@/store/progress'
 import { cn } from '@/lib/utils'
 
@@ -56,7 +58,7 @@ export function Reference() {
               <TabsTrigger
                 key={value}
                 value={value}
-                className="shrink-0 rounded-none border-0 border-b-[1.5px] border-transparent px-3 py-2 text-[15px] tracking-wide text-foreground-soft shadow-none data-[state=active]:border-rule-strong data-[state=active]:bg-transparent data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                className="shrink-0 rounded-none border-0 border-b-[1.5px] border-transparent px-3 py-2 text-[16px] tracking-wide text-foreground-soft shadow-none data-[state=active]:border-rule-strong data-[state=active]:bg-transparent data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none"
               >
                 {label}
               </TabsTrigger>
@@ -93,7 +95,7 @@ function GridTable({
   rows,
 }: {
   caption: string
-  rows: Array<{ head: string; sub?: string; cells: Array<string | null> }>
+  rows: Array<{ head: string; sub?: string; kasus?: Kasus; cells: Array<string | null> }>
 }) {
   return (
     <div className="-mx-5 overflow-x-auto px-5">
@@ -101,18 +103,19 @@ function GridTable({
         <caption className="sr-only">{caption}</caption>
         <thead>
           <tr className="border-b-[1.5px] border-rule-strong">
-            <th scope="col" className="w-[7.5rem] pb-2 pr-3 text-[13px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+            <th scope="col" className="w-[7.5rem] pb-2 pr-3 text-[15px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
               Kasus
             </th>
             {SLOTS.map((slot) => (
               <th
                 key={slot}
                 scope="col"
-                className="px-2 pb-2 pt-1 text-[13px] font-semibold uppercase tracking-[0.1em]"
-                style={{
-                  color: SLOT_HEAD[slot].colour ?? 'var(--muted-foreground)',
-                  background: SLOT_HEAD[slot].gender ? genderTint(SLOT_HEAD[slot].gender, 24) : undefined,
-                }}
+                className="px-2 py-1.5 text-[15px] font-semibold uppercase tracking-[0.08em]"
+                style={
+                  SLOT_HEAD[slot].colour
+                    ? { background: SLOT_HEAD[slot].colour, color: 'var(--background)' }
+                    : { color: 'var(--muted-foreground)' }
+                }
               >
                 {SLOT_HEAD[slot].label}
               </th>
@@ -122,9 +125,13 @@ function GridTable({
         <tbody>
           {rows.map((row) => (
             <tr key={row.head} className="border-b border-rule">
-              <th scope="row" className="py-2.5 pr-3 align-baseline">
-                <span className="block text-[15px] font-medium">{row.head}</span>
-                {row.sub && <span className="block text-[13px] text-muted-foreground">{row.sub}</span>}
+              <th
+                scope="row"
+                className="px-2 py-2 align-middle"
+                style={row.kasus ? { background: KASUS_VAR[row.kasus], color: 'var(--background)' } : undefined}
+              >
+                <span className="block text-[16px] font-semibold">{row.head}</span>
+                {row.sub && <span className="block text-[15px] opacity-80">{row.sub}</span>}
               </th>
               {row.cells.map((cell, i) => (
                 <td
@@ -133,7 +140,7 @@ function GridTable({
                   style={{
                     color: SLOT_HEAD[SLOTS[i] as Slot].colour,
                     background: SLOT_HEAD[SLOTS[i] as Slot].gender
-                      ? genderTint(SLOT_HEAD[SLOTS[i] as Slot].gender, 9)
+                      ? genderTint(SLOT_HEAD[SLOTS[i] as Slot].gender, 5)
                       : undefined,
                   }}
                 >
@@ -170,7 +177,7 @@ function DeterminerTables() {
             onClick={() => setActive(option.id)}
             aria-pressed={active === option.id}
             className={cn(
-              'h-9 border px-3 text-[14px] transition-colors',
+              'h-9 border px-3 text-[16px] transition-colors',
               active === option.id
                 ? 'border-rule-strong bg-foreground text-background'
                 : 'border-rule hover:bg-secondary',
@@ -180,12 +187,13 @@ function DeterminerTables() {
           </button>
         ))}
       </div>
-      <p className="text-[14px] text-foreground-soft">{set.note}</p>
+      <p className="text-[16px] text-foreground-soft">{set.note}</p>
       <GridTable
         caption={set.title}
         rows={KASUS.map((kasus) => ({
           head: KASUS_LABEL[kasus],
           sub: KASUS_QUESTION[kasus],
+          kasus,
           cells: SLOTS.map((slot) => {
             const det = determiner(set.id)
             if (det.only && det.only === 'sg' && slot === 'pl') return null
@@ -219,7 +227,7 @@ function AdjectiveTables() {
             onClick={() => setActive(option.id)}
             aria-pressed={active === option.id}
             className={cn(
-              'h-9 border px-3 text-[14px] transition-colors',
+              'h-9 border px-3 text-[16px] transition-colors',
               active === option.id
                 ? 'border-rule-strong bg-foreground text-background'
                 : 'border-rule hover:bg-secondary',
@@ -229,11 +237,12 @@ function AdjectiveTables() {
           </button>
         ))}
       </div>
-      <p className="text-[14px] text-foreground-soft">{set.note}</p>
+      <p className="text-[16px] text-foreground-soft">{set.note}</p>
       <GridTable
         caption={`Adjektivendungen ${set.title}`}
         rows={KASUS.map((kasus) => ({
           head: KASUS_LABEL[kasus],
+          kasus,
           cells: SLOTS.map((slot) => `-${adjEnding(set.id, slot, kasus)}`),
         }))}
       />
@@ -295,7 +304,7 @@ function NounLookup() {
                 <span className="de flex-1 text-[17px] font-semibold" style={{ color: GENDER_VAR[n.gender] }}>
                   {({ m: 'der', f: 'die', n: 'das' } as Record<Gender, string>)[n.gender]} {n.word}
                 </span>
-                <span className="text-[14px] text-foreground-soft">{n.en}</span>
+                <span className="text-[16px] text-foreground-soft">{n.en}</span>
               </button>
             </li>
           ))}
@@ -306,10 +315,10 @@ function NounLookup() {
         <p className="de text-[clamp(1.8rem,7vw,2.6rem)] leading-none" style={{ color: GENDER_VAR[target.gender] }}>
           {({ m: 'der', f: 'die', n: 'das' } as Record<Gender, string>)[target.gender]} {target.word}
         </p>
-        <p className="flex flex-wrap items-center gap-x-3 pt-2 text-[15px] text-foreground-soft">
+        <p className="flex flex-wrap items-center gap-x-3 pt-2 text-[16px] text-foreground-soft">
           <span>{target.en}</span>
           <GenderChip gender={target.gender} />
-          <span className="de text-[16px]">
+          <span className="de text-[17px]">
             Plural: {target.plural ? `die ${target.plural}` : 'keiner'}
           </span>
         </p>
@@ -319,13 +328,13 @@ function NounLookup() {
         <table className="w-full min-w-[340px] border-collapse text-left">
           <thead>
             <tr className="border-b-[1.5px] border-rule-strong">
-              <th scope="col" className="w-[7.5rem] pb-2 pr-3 text-[13px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+              <th scope="col" className="w-[7.5rem] pb-2 pr-3 text-[15px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
                 Kasus
               </th>
-              <th scope="col" className="pb-2 pr-3 text-[13px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+              <th scope="col" className="pb-2 pr-3 text-[15px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
                 Singular
               </th>
-              <th scope="col" className="pb-2 text-[13px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+              <th scope="col" className="pb-2 text-[15px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
                 Plural
               </th>
             </tr>
@@ -333,9 +342,13 @@ function NounLookup() {
           <tbody>
             {KASUS.map((kasus) => (
               <tr key={kasus} className="border-b border-rule">
-                <th scope="row" className="py-2.5 pr-3 align-baseline">
-                  <span className="block text-[15px] font-semibold">{KASUS_LABEL[kasus]}</span>
-                  <span className="block text-[13px] text-muted-foreground">{KASUS_QUESTION[kasus]}</span>
+                <th
+                  scope="row"
+                  className="px-2 py-2 align-middle"
+                  style={{ background: KASUS_VAR[kasus], color: 'var(--background)' }}
+                >
+                  <span className="block text-[16px] font-semibold">{KASUS_LABEL[kasus]}</span>
+                  <span className="block text-[15px] opacity-80">{KASUS_QUESTION[kasus]}</span>
                 </th>
                 <td className="de py-2.5 pr-3 align-baseline text-[18px]">{cell(kasus, 'sg')}</td>
                 <td className="de py-2.5 align-baseline text-[18px]">{cell(kasus, 'pl') ?? '·'}</td>
@@ -346,7 +359,7 @@ function NounLookup() {
       </div>
 
       {(target.hint || target.oblique) && (
-        <p className="text-[14px] leading-snug text-foreground-soft">
+        <p className="text-[16px] leading-snug text-foreground-soft">
           {target.oblique && (
             <>
               n-Deklination: {nounForm(target, 'akk', 'sg').form} in every case but the nominative
@@ -400,7 +413,7 @@ function VerbList() {
           onClick={() => setOnlyIrregular((v) => !v)}
           aria-pressed={onlyIrregular}
           className={cn(
-            'h-9 w-fit border px-3 text-[14px] transition-colors',
+            'h-9 w-fit border px-3 text-[16px] transition-colors',
             onlyIrregular ? 'border-rule-strong bg-foreground text-background' : 'border-rule hover:bg-secondary',
           )}
         >
@@ -416,7 +429,7 @@ function VerbList() {
               className="group flex min-h-[56px] items-baseline gap-3 py-3 transition-colors hover:bg-secondary/60"
             >
               <span className="de min-w-0 flex-[1.1] text-[19px]">{verb.infinitive}</span>
-              <span className="hidden flex-1 text-[14px] text-foreground-soft sm:block">{verb.en}</span>
+              <span className="hidden flex-1 text-[16px] text-foreground-soft sm:block">{verb.en}</span>
               <PrincipalParts verb={verb} />
               <ChevronRight
                 className="size-4 shrink-0 self-center text-muted-foreground transition-transform group-hover:translate-x-0.5"
@@ -446,26 +459,42 @@ function PrepositionList() {
       {groups.map(({ group, items }) => (
         <section key={group} className="flex flex-col gap-1">
           <LedgerHead
-            label={PREP_GROUP_LABEL[group]}
+            label={
+              <span className="flex items-center gap-2">
+                <KasusBar cases={GROUP_KASUS[group] ?? []} className="h-4" />
+                <span style={{ color: KASUS_VAR[GROUP_KASUS[group]?.[0] ?? 'akk'] }}>
+                  {PREP_GROUP_LABEL[group]}
+                </span>
+              </span>
+            }
             right={`${items.length} Präposition${items.length === 1 ? '' : 'en'}`}
           />
-          <ul className="long-list flex flex-col">
+          <ul className="long-list flex flex-col gap-2">
             {items.map((prep) => (
-              <li key={prep.id} className="flex flex-col gap-2 border-b border-rule py-4">
+              <li
+                key={prep.id}
+                className="flex gap-3 border p-3"
+                style={{
+                  background: kasusTint(GROUP_KASUS[group]?.[0] ?? 'akk', 20),
+                  borderColor: kasusTint(GROUP_KASUS[group]?.[0] ?? 'akk', 45),
+                }}
+              >
+                <KasusBar cases={GROUP_KASUS[group] ?? []} className="self-stretch" />
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                   <span className="de text-[22px] font-semibold leading-none">{prep.word}</span>
-                  <span className="text-[15px] text-foreground-soft">{prep.en}</span>
+                  <span className="text-[16px] text-foreground-soft">{prep.en}</span>
                 </div>
 
                 {prep.wechsel && (
-                  <dl className="grid gap-1 text-[14px] sm:grid-cols-2">
+                  <dl className="grid gap-1 text-[16px] sm:grid-cols-2">
                     <div className="flex gap-2">
-                      <dt className="shrink-0 font-medium">Akkusativ</dt>
-                      <dd className="text-muted-foreground">{prep.wechsel.akk}</dd>
+                      <dt className="shrink-0"><KasusName kasus="akk" /></dt>
+                      <dd className="text-foreground-soft">{prep.wechsel.akk}</dd>
                     </div>
                     <div className="flex gap-2">
-                      <dt className="shrink-0 font-medium">Dativ</dt>
-                      <dd className="text-muted-foreground">{prep.wechsel.dat}</dd>
+                      <dt className="shrink-0"><KasusName kasus="dat" /></dt>
+                      <dd className="text-foreground-soft">{prep.wechsel.dat}</dd>
                     </div>
                   </dl>
                 )}
@@ -475,18 +504,22 @@ function PrepositionList() {
                     <li key={example.de} className="flex flex-col gap-0.5">
                       <span className="de text-[17px]">
                         {example.de}
-                        <span className="pl-2 font-sans text-[13px] uppercase tracking-[0.1em] text-muted-foreground">
+                        <span
+                          className="pl-2 font-sans text-[15px] font-semibold uppercase tracking-[0.08em]"
+                          style={{ color: KASUS_VAR[example.kasus] }}
+                        >
                           {KASUS_LABEL[example.kasus]}
                         </span>
                       </span>
-                      <span className="text-[14px] italic text-muted-foreground">{example.en}</span>
+                      <span className="text-[16px] italic text-foreground-soft">{example.en}</span>
                     </li>
                   ))}
                 </ul>
 
                 {prep.note && (
-                  <p className="text-[14px] leading-snug text-foreground-soft">{prep.note}</p>
+                  <p className="text-[16px] leading-relaxed text-foreground-soft">{prep.note}</p>
                 )}
+                </div>
               </li>
             ))}
           </ul>
@@ -495,7 +528,7 @@ function PrepositionList() {
 
       <section className="flex flex-col gap-1">
         <LedgerHead label="Wo? oder wohin?" right="5 Paare" />
-        <p className="py-3 text-[14px] leading-snug text-foreground-soft">
+        <p className="py-3 text-[16px] leading-snug text-foreground-soft">
           The stative verb is strong and takes a dative. The one that moves something is weak and
           takes an accusative. Get these five right and the two-way prepositions stop being a
           guess.
@@ -503,21 +536,21 @@ function PrepositionList() {
         <ul className="flex flex-col">
           {POSITION_PAIRS.map((pair) => (
             <li key={pair.id} className="grid gap-3 border-b border-rule py-4 sm:grid-cols-2">
-              <div className="flex flex-col gap-1">
-                <span className="eyebrow">Wo? · Dativ</span>
+              <div className="flex flex-col gap-1 border-l-[5px] pl-3" style={{ borderColor: KASUS_VAR.dat, background: kasusTint('dat', 18) }}>
+                <span className="eyebrow" style={{ color: KASUS_VAR.dat }}>Wo? · Dativ</span>
                 <span className="de text-[18px]">
-                  {pair.stative.verb} <span className="text-muted-foreground">({pair.stative.forms})</span>
+                  {pair.stative.verb} <span className="text-foreground-soft">({pair.stative.forms})</span>
                 </span>
-                <span className="de text-[16px]">{pair.example.dat.de}</span>
-                <span className="text-[14px] italic text-muted-foreground">{pair.example.dat.en}</span>
+                <span className="de text-[17px]">{pair.example.dat.de}</span>
+                <span className="text-[16px] italic text-foreground-soft">{pair.example.dat.en}</span>
               </div>
-              <div className="flex flex-col gap-1">
-                <span className="eyebrow">Wohin? · Akkusativ</span>
+              <div className="flex flex-col gap-1 border-l-[5px] pl-3" style={{ borderColor: KASUS_VAR.akk, background: kasusTint('akk', 18) }}>
+                <span className="eyebrow" style={{ color: KASUS_VAR.akk }}>Wohin? · Akkusativ</span>
                 <span className="de text-[18px]">
-                  {pair.dynamic.verb} <span className="text-muted-foreground">({pair.dynamic.forms})</span>
+                  {pair.dynamic.verb} <span className="text-foreground-soft">({pair.dynamic.forms})</span>
                 </span>
-                <span className="de text-[16px]">{pair.example.akk.de}</span>
-                <span className="text-[14px] italic text-muted-foreground">{pair.example.akk.en}</span>
+                <span className="de text-[17px]">{pair.example.akk.de}</span>
+                <span className="text-[16px] italic text-foreground-soft">{pair.example.akk.en}</span>
               </div>
             </li>
           ))}
@@ -536,26 +569,47 @@ function frameText(frame: Valency['frames'][number]): string {
   return PATTERN_LABEL[frame.pattern]
 }
 
+/** The case a frame governs, for colouring. Multi-case frames take the first. */
+function frameKasus(frame: Valency['frames'][number]): Kasus | null {
+  if (frame.prepCase) return frame.prepCase
+  if (frame.pattern.startsWith('dat')) return 'dat'
+  if (frame.pattern.startsWith('akk')) return 'akk'
+  if (frame.pattern === 'gen') return 'gen'
+  return null
+}
+
 function ValencyRow({ entry }: { entry: Valency }) {
   return (
     <li className="flex flex-col gap-2 border-b border-rule py-4">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="de text-[20px] font-semibold leading-none">{entry.verb}</span>
-        <span className="text-[15px] text-foreground-soft">{entry.en}</span>
+        <span className="text-[16px] text-foreground-soft">{entry.en}</span>
       </div>
       <ul className="flex flex-col gap-2">
         {entry.frames.map((frame, i) => (
-          <li key={i} className="flex flex-col gap-0.5 border-l-[3px] border-rule pl-3">
+          <li
+            key={i}
+            className="flex flex-col gap-0.5 border-l-[5px] pl-3"
+            style={{
+              borderColor: frameKasus(frame) ? KASUS_VAR[frameKasus(frame) as Kasus] : 'var(--rule)',
+              background: frameKasus(frame) ? kasusTint(frameKasus(frame) as Kasus, 15) : undefined,
+            }}
+          >
             <span className="flex flex-wrap items-baseline gap-x-2">
-              <span className="text-[14px] font-semibold">{frameText(frame)}</span>
-              {frame.sense && <span className="text-[14px] text-foreground-soft">{frame.sense}</span>}
+              <span
+                className="text-[16px] font-semibold"
+                style={frameKasus(frame) ? { color: KASUS_VAR[frameKasus(frame) as Kasus] } : undefined}
+              >
+                {frameText(frame)}
+              </span>
+              {frame.sense && <span className="text-[16px] text-foreground-soft">{frame.sense}</span>}
             </span>
             <span className="de text-[17px]">{frame.example.de}</span>
-            <span className="text-[14px] italic text-muted-foreground">{frame.example.en}</span>
+            <span className="text-[16px] italic text-foreground-soft">{frame.example.en}</span>
           </li>
         ))}
       </ul>
-      {entry.note && <p className="text-[14px] leading-snug text-foreground-soft">{entry.note}</p>}
+      {entry.note && <p className="text-[16px] leading-snug text-foreground-soft">{entry.note}</p>}
     </li>
   )
 }
@@ -602,7 +656,7 @@ function ValencyList() {
         <section key={section.label} className="flex flex-col gap-1">
           <LedgerHead label={section.label} right={`${section.items.length} Verben`} />
           {section.blurb && (
-            <p className="py-3 text-[14px] leading-snug text-foreground-soft">{section.blurb}</p>
+            <p className="py-3 text-[16px] leading-snug text-foreground-soft">{section.blurb}</p>
           )}
           <ul className="long-list flex flex-col">
             {section.items.map((entry) => (
