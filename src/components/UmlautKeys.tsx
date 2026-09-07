@@ -22,7 +22,7 @@ export function UmlautKeys({
           // Keeps the text cursor where it was instead of stealing focus.
           onMouseDown={(event) => event.preventDefault()}
           onClick={() => onInsert(char)}
-          className="de flex h-11 min-w-11 items-center justify-center border border-rule bg-card text-[17px] leading-none transition-colors hover:bg-secondary active:bg-accent"
+          className="de flex h-11 min-w-11 items-center justify-center border border-rule bg-card text-[18px] leading-none transition-colors hover:bg-secondary active:bg-accent"
           aria-label={`Insert ${char}`}
         >
           {char}

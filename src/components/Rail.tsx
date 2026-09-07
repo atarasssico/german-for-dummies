@@ -35,7 +35,7 @@ export function Rail({
 /** Gender stated in words as well as colour, so colour is never the only signal. */
 export function GenderChip({ gender, className }: { gender: Gender; className?: string }) {
   return (
-    <span className={cn('inline-flex items-baseline gap-1.5 text-[11px] uppercase tracking-[0.1em]', className)}>
+    <span className={cn('inline-flex items-baseline gap-1.5 text-[13px] uppercase tracking-[0.1em]', className)}>
       <span aria-hidden className="mt-[1px] h-[11px] w-[3px] self-center" style={{ background: GENDER_VAR[gender] }} />
       <span style={{ color: GENDER_VAR[gender] }} className="font-medium">
         {GENDER_ARTICLE[gender]}

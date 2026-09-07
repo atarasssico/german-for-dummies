@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
@@ -6,6 +6,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { LedgerHead } from '@/components/Ledger'
+import { snapshotFilename } from '@/lib/backup'
 import { TOPICS } from '@/data/nouns'
 import { TENSES, TENSE_LABEL } from '@/engine/conjugate'
 import type { Tense } from '@/engine/conjugate'
@@ -19,6 +20,12 @@ import { useProgress } from '@/store/progress'
 import { cn } from '@/lib/utils'
 
 const SESSION_LENGTHS = [8, 12, 20, 30]
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} bytes`
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
 
 const LEVEL_NOTE: Record<Level, string> = {
   A1: 'Everyday words, the common irregulars, no Genitiv',
@@ -45,7 +52,7 @@ function Chip({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'h-9 border px-3 text-[12.5px] transition-colors',
+        'h-9 border px-3 text-[14px] transition-colors',
         active ? 'border-rule-strong bg-foreground text-background' : 'border-rule hover:bg-secondary',
         className,
       )}
@@ -71,10 +78,10 @@ function SettingRow({
   return (
     <div className="flex items-start justify-between gap-6 border-b border-rule py-3.5">
       <div className="flex flex-col gap-0.5">
-        <Label htmlFor={id} className="text-[14px] font-medium">
+        <Label htmlFor={id} className="text-[16px] font-medium">
           {title}
         </Label>
-        <p className="max-w-prose text-[12.5px] leading-snug text-muted-foreground">{detail}</p>
+        <p className="max-w-prose text-[14px] leading-snug text-muted-foreground">{detail}</p>
       </div>
       <Switch id={id} checked={checked} onCheckedChange={onChange} className="mt-1 shrink-0" />
     </div>
@@ -82,8 +89,18 @@ function SettingRow({
 }
 
 export function SettingsPage() {
-  const { settings, updateSettings, resetAll, resetMode, progress } = useProgress()
+  const { settings, updateSettings, resetAll, resetMode, progress, storage, exportProgress, importProgress } =
+    useProgress()
   const { theme, setTheme } = useTheme()
+  const [notice, setNotice] = useState<string | null>(null)
+  const fileInput = useRef<HTMLInputElement>(null)
+  const importMode = useRef<'merge' | 'replace'>('merge')
+
+  const pickFile = (mode: 'merge' | 'replace') => {
+    importMode.current = mode
+    setNotice(null)
+    fileInput.current?.click()
+  }
   // null = closed, 'all' = everything, otherwise the single trainer to clear.
   const [pending, setPending] = useState<Mode | 'all' | null>(null)
 
@@ -111,12 +128,12 @@ export function SettingsPage() {
             </Chip>
           ))}
         </div>
-        <p className="text-[12.5px] text-muted-foreground">{LEVEL_NOTE[settings.level]}</p>
+        <p className="text-[14px] text-muted-foreground">{LEVEL_NOTE[settings.level]}</p>
         <ul className="flex flex-col">
           {poolSizes.map(({ mode, size }) => (
             <li
               key={mode}
-              className="flex items-baseline justify-between border-b border-rule py-2 text-[13px]"
+              className="flex items-baseline justify-between border-b border-rule py-2 text-[15px]"
             >
               <span>{MODE_LABEL[mode]}</span>
               <span className="tabular text-muted-foreground">{size.toLocaleString('de-DE')}</span>
@@ -142,7 +159,7 @@ export function SettingsPage() {
 
       <section className="flex flex-col gap-4">
         <LedgerHead label="Zeitformen" right={`${settings.tenses.length} von ${TENSES.length}`} />
-        <p className="text-[12.5px] text-muted-foreground">
+        <p className="text-[14px] text-muted-foreground">
           Which tenses the verb drill asks for. The paradigm writer always offers all ten.
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -164,7 +181,7 @@ export function SettingsPage() {
 
       <section className="flex flex-col gap-4">
         <LedgerHead label="Determinative" right={`${settings.determiners.length} ausgewählt`} />
-        <p className="text-[12.5px] text-muted-foreground">
+        <p className="text-[14px] text-muted-foreground">
           Which determiners can appear in the declension drill.
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -252,13 +269,86 @@ export function SettingsPage() {
       </section>
 
       <section className="flex flex-col gap-4">
+        <LedgerHead label="Datensicherung" right={storage.persisted ? 'gesichert' : 'nicht gesichert'} />
+
+        <p className="max-w-prose text-[15px] leading-relaxed text-muted-foreground">
+          Your progress lives in this browser only, and takes {formatBytes(storage.progressBytes)}.{' '}
+          {storage.persisted
+            ? 'Chrome has marked it as persistent, so it survives even when the disk runs low.'
+            : 'Chrome has not marked it as persistent yet. That happens once you have used the app a few times, or as soon as you install it.'}{' '}
+          Clearing site data deletes it either way, so export a copy now and then.
+        </p>
+
+        {storage.recovered && (
+          <p className="border-l-[3px] border-wrong pl-3 text-[15px] leading-snug">
+            The stored file could not be read on the last load, so an earlier copy was restored. The
+            unreadable version was kept aside rather than deleted.
+          </p>
+        )}
+
+        <div className="flex flex-wrap gap-1.5">
+          <Button
+            size="sm"
+            className="h-9"
+            onClick={() => {
+              exportProgress()
+              setNotice(`Exported as ${snapshotFilename()}`)
+            }}
+          >
+            Exportieren
+          </Button>
+          <Button variant="outline" size="sm" className="h-9" onClick={() => pickFile('merge')}>
+            Importieren und zusammenführen
+          </Button>
+          <Button variant="outline" size="sm" className="h-9" onClick={() => pickFile('replace')}>
+            Importieren und ersetzen
+          </Button>
+        </div>
+
+        <input
+          ref={fileInput}
+          type="file"
+          accept="application/json,.json"
+          className="sr-only"
+          aria-hidden
+          tabIndex={-1}
+          onChange={async (event) => {
+            const file = event.target.files?.[0]
+            event.target.value = ''
+            if (!file) return
+            try {
+              const added = importProgress(await file.text(), importMode.current)
+              setNotice(
+                importMode.current === 'replace'
+                  ? 'Replaced your progress with the file.'
+                  : `Merged. ${added} card${added === 1 ? '' : 's'} added, and any card reviewed more recently in the file now wins.`,
+              )
+            } catch (error) {
+              setNotice(error instanceof Error ? error.message : 'That file could not be read.')
+            }
+          }}
+        />
+
+        {notice && (
+          <p aria-live="polite" className="border-l-[3px] border-rule-strong pl-3 text-[15px] leading-snug">
+            {notice}
+          </p>
+        )}
+
+        <p className="max-w-prose text-[15px] leading-relaxed text-muted-foreground">
+          Merging keeps whichever copy of each card was reviewed more recently, so your phone and
+          your desktop can be merged in either order with the same result. Importing the same file
+          twice changes nothing.
+        </p>
+      </section>
+
+      <section className="flex flex-col gap-4">
         <LedgerHead
-          label="Fortschritt"
+          label="Zurücksetzen"
           right={`${Object.keys(progress.cards).length.toLocaleString('de-DE')} Karten begonnen`}
         />
-        <p className="max-w-prose text-[12.5px] leading-snug text-muted-foreground">
-          Everything lives in this browser. Clearing site data or switching browser starts you over,
-          and there is no copy anywhere else.
+        <p className="max-w-prose text-[15px] leading-relaxed text-muted-foreground">
+          Nothing here is automatic. Progress is only ever cleared when you clear it.
         </p>
         <div className="flex flex-wrap gap-1.5">
           {MODES.map((mode) => (
@@ -315,7 +405,7 @@ export function SettingsPage() {
         </Dialog>
       </section>
 
-      <p className="border-t border-rule pt-4 text-[12px] leading-relaxed text-muted-foreground">
+      <p className="border-t border-rule pt-4 text-[14px] leading-relaxed text-muted-foreground">
         Grammar generated from principal parts rather than typed out by hand, so every form comes
         from one rule in one place. A wrong form is a bug. Open an issue and it gets fixed for good.
       </p>

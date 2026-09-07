@@ -81,6 +81,35 @@ the convention German textbooks already use, so it transfers off the screen.
 Those three hues never mean anything else. Right and wrong are carried by form
 (a rule, a strike-through) plus amber, so no colour has to mean two things.
 
+## Where progress is kept
+
+`localStorage`, under one key, in whichever browser you used. There is no
+server, so nothing is transmitted and two people using the app never see each
+other's progress.
+
+Three things keep that from being fragile:
+
+- **Migration, never reset.** An unrecognised schema version is salvaged field
+  by field rather than discarded, so a future change to the data shape cannot
+  cost you a year of reviews.
+- **A last-known-good copy.** Every write first copies the previous value to a
+  backup key. Text that fails to parse is quarantined under a third key instead
+  of being overwritten, and the backup is loaded instead.
+- **Persistent storage.** The app calls `navigator.storage.persist()`, which in
+  Chrome exempts the data from eviction when the disk runs low.
+
+What still deletes it: clearing site data, deleting an installed copy, or a
+different browser or device. So Settings has **Exportieren**, which downloads
+your progress as a dated JSON file, and two imports:
+
+- **Zusammenführen** keeps whichever copy of each card was reviewed more
+  recently, so a phone and a desktop merge to the same result in either
+  direction. Day counts take the larger value rather than the sum, so importing
+  the same file twice changes nothing.
+- **Ersetzen** overwrites everything with the file.
+
+Progress is only ever cleared by you, from Settings, behind a confirmation.
+
 ## Development
 
 ```sh

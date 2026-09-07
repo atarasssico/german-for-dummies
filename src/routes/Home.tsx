@@ -31,7 +31,7 @@ export function Home() {
   const nextMode: Mode = progress.lastMode ?? 'articles'
 
   if (!ready) {
-    return <div className="pt-10 text-sm text-muted-foreground">Loading your box…</div>
+    return <div className="pt-10 text-base text-muted-foreground">Loading your box…</div>
   }
 
   return (
@@ -50,7 +50,7 @@ export function Home() {
                 Karte{today.answered === 1 ? '' : 'n'} heute
               </span>
             </h1>
-            <p className="text-sm tabular text-muted-foreground">
+            <p className="text-base tabular text-muted-foreground">
               {today.correct} richtig · {percent(today.correct, today.answered)} %
               <span className="px-2 text-rule-strong">/</span>
               {progress.totals.answered.toLocaleString('de-DE')} insgesamt ·{' '}
@@ -73,7 +73,7 @@ export function Home() {
         )}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button asChild size="lg" className="h-12 w-full justify-between px-5 text-[15px] sm:w-auto sm:min-w-[260px]">
+          <Button asChild size="lg" className="h-12 w-full justify-between px-5 text-[16px] sm:w-auto sm:min-w-[260px]">
             <Link to={`/ueben/${nextMode}`}>
               <span>{started ? `Weiter mit ${MODE_LABEL[nextMode]}` : `Anfangen mit ${MODE_LABEL[nextMode]}`}</span>
               <ArrowRight className="size-4" aria-hidden />
@@ -110,16 +110,16 @@ export function Home() {
                   style={{ opacity: 0.25 + 0.75 * summary.progress }}
                 />
                 <span className="flex min-w-0 flex-1 flex-col gap-1">
-                  <span className="de text-[21px] leading-none" lang="de">{MODE_LABEL[mode]}</span>
-                  <span className="text-[13px] leading-snug text-muted-foreground">
+                  <span className="de text-[22px] leading-none" lang="de">{MODE_LABEL[mode]}</span>
+                  <span className="text-[15px] leading-snug text-muted-foreground">
                     {MODE_BLURB[mode]}
                   </span>
                 </span>
                 <span className="flex shrink-0 flex-col items-end gap-1 text-right">
-                  <span className="text-[19px] leading-none tabular">
+                  <span className="text-[20px] leading-none tabular">
                     {summary.due.toLocaleString('de-DE')}
                   </span>
-                  <span className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground tabular">
+                  <span className="text-[13px] uppercase tracking-[0.1em] text-muted-foreground tabular">
                     {Math.round(summary.progress * 100)} % gelernt
                   </span>
                 </span>

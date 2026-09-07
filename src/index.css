@@ -185,6 +185,7 @@
 
     body {
         @apply bg-background text-foreground antialiased;
+        font-size: 16px;
         /* No 300ms double-tap delay, and no blue flash on tap. */
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
@@ -225,7 +226,7 @@
 @layer components {
     /* The eyebrow that labels every task. Archivo, tracked out, small. */
     .eyebrow {
-        @apply text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground;
+        @apply text-[13px] font-medium uppercase tracking-[0.12em] text-muted-foreground;
     }
 
     /* German text is set as a dictionary headword. */

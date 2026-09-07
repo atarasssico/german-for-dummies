@@ -14,7 +14,7 @@ const NAV = [
 export function Wordmark({ className }: { className?: string }) {
   return (
     <span className={cn('inline-flex flex-col gap-1', className)}>
-      <span className="de text-[19px] leading-none tracking-tight">Deutsch</span>
+      <span className="de text-[20px] leading-none tracking-tight">Deutsch</span>
       <span aria-hidden className="flex h-[3px] w-full min-w-[64px]">
         <span className="flex-1" style={{ background: GENDER_VAR.m }} />
         <span className="flex-1" style={{ background: GENDER_VAR.f }} />
@@ -33,7 +33,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-dvh bg-background" translate="no">
       <a
         href="#inhalt"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:border focus:border-rule-strong focus:bg-background focus:px-3 focus:py-2 focus:text-[13px]"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:border focus:border-rule-strong focus:bg-background focus:px-3 focus:py-2 focus:text-[15px]"
       >
         Zum Inhalt springen
       </a>
@@ -51,7 +51,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   end={item.to === '/'}
                   className={({ isActive }) =>
                     cn(
-                      'pb-0.5 text-[13px] tracking-wide transition-colors',
+                      'pb-0.5 text-[15px] tracking-wide transition-colors',
                       isActive
                         ? 'border-b-[1.5px] border-rule-strong font-medium text-foreground'
                         : 'border-b-[1.5px] border-transparent text-muted-foreground hover:text-foreground',
@@ -86,7 +86,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   end={item.to === '/'}
                   className={({ isActive }) =>
                     cn(
-                      'flex min-h-[56px] flex-1 flex-col items-center justify-center gap-1 text-[11px] tracking-wide',
+                      'flex min-h-[56px] flex-1 flex-col items-center justify-center gap-1 text-[13px] tracking-wide',
                       isActive ? 'text-foreground' : 'text-muted-foreground',
                     )
                   }

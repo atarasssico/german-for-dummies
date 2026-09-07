@@ -45,14 +45,14 @@ export function ProgressStrip({
                 }}
               />
             </div>
-            <span className="text-center text-[11px] leading-none tabular">{count || '·'}</span>
-            <span className="text-center text-[10px] uppercase leading-none tracking-[0.06em] text-muted-foreground">
+            <span className="text-center text-[13px] leading-none tabular">{count || '·'}</span>
+            <span className="text-center text-[12.5px] uppercase leading-none tracking-[0.06em] text-muted-foreground">
               {intervalLabel(BOX_INTERVALS[box] ?? 0)}
             </span>
           </li>
         ))}
       </ol>
-      <p className="text-[11.5px] leading-snug text-muted-foreground">
+      <p className="text-[13px] leading-snug text-muted-foreground">
         A card moves one compartment right each time you get it right, and back to the first the
         moment you get it wrong.
       </p>

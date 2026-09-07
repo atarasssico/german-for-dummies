@@ -148,7 +148,7 @@ export function Session() {
       <div className="flex flex-col gap-4 pt-10">
         <p className="eyebrow">{MODE_LABEL[activeMode]}</p>
         <p className="de text-3xl">Nichts zu üben.</p>
-        <p className="max-w-prose text-sm text-muted-foreground">
+        <p className="max-w-prose text-base text-muted-foreground">
           Every card in this trainer is scheduled for a later day. Raise the level in Settings to
           add more, or come back tomorrow.
         </p>
@@ -226,7 +226,7 @@ export function Session() {
             {question.focus}
           </h1>
           {question.sub && (
-            <p className="pt-2 text-[13px] leading-snug text-muted-foreground">{question.sub}</p>
+            <p className="pt-2 text-[15px] leading-snug text-muted-foreground">{question.sub}</p>
           )}
         </Rail>
 
@@ -304,13 +304,13 @@ export function Session() {
                   />
                   <span className="flex min-w-0 flex-col gap-0.5">
                     <span
-                      className="de text-[22px] leading-none"
+                      className="de text-[23px] leading-none"
                       style={{ color: choiceColour(choice.id) }}
                     >
                       {choice.label}
                     </span>
                     {choice.sub && (
-                      <span className="text-[12.5px] leading-snug text-muted-foreground">
+                      <span className="text-[14px] leading-snug text-muted-foreground">
                         {choice.sub}
                       </span>
                     )}
@@ -356,7 +356,7 @@ export function Session() {
                     onClick={() => setPrepCase(option)}
                     aria-pressed={prepCase === option}
                     className={cn(
-                      'h-11 border px-4 text-[13px] tracking-wide transition-colors',
+                      'h-11 border px-4 text-[15px] tracking-wide transition-colors',
                       prepCase === option
                         ? 'border-rule-strong bg-foreground text-background'
                         : 'border-rule hover:bg-secondary',
@@ -392,11 +392,11 @@ export function Session() {
             ref={nextRef}
             onClick={advance}
             size="lg"
-            className="h-12 w-full justify-between px-5 text-[15px]"
+            className="h-12 w-full justify-between px-5 text-[16px]"
           >
             <span>{index + 1 === queue.length ? 'Fertig' : 'Weiter'}</span>
             <span className="flex items-center gap-2">
-              <span className="hidden text-[11px] uppercase tracking-[0.1em] opacity-60 sm:inline">
+              <span className="hidden text-[13px] uppercase tracking-[0.1em] opacity-60 sm:inline">
                 ⏎
               </span>
               <ArrowRight className="size-4" aria-hidden />
@@ -461,7 +461,7 @@ function SessionSummary({
         <p className="de text-[clamp(2.5rem,11vw,4rem)] leading-[0.95]">
           {right} <span className="text-muted-foreground">von {log.length}</span>
         </p>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-base text-muted-foreground">
           {wrong.length === 0
             ? 'Every card right. They all move up a compartment.'
             : `${wrong.length} card${wrong.length === 1 ? '' : 's'} went back to the first compartment, so ${wrong.length === 1 ? 'it comes' : 'they come'} round again today.`}
@@ -479,9 +479,9 @@ function SessionSummary({
                 key={entry.id}
                 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-rule py-3"
               >
-                <span className="de min-w-0 flex-1 text-[17px]">{entry.prompt}</span>
-                <span className="de text-[15px] text-wrong line-through">{entry.given || '·'}</span>
-                <span className="de text-[15px]">{entry.expected}</span>
+                <span className="de min-w-0 flex-1 text-[18px]">{entry.prompt}</span>
+                <span className="de text-[16px] text-wrong line-through">{entry.given || '·'}</span>
+                <span className="de text-[16px]">{entry.expected}</span>
               </li>
             ))}
           </ul>

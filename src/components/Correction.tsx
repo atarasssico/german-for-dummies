@@ -70,18 +70,18 @@ export function Correction({
       </header>
 
       {showDiff && (
-        <p className="text-sm">
+        <p className="text-base">
           <span className="eyebrow pr-2">richtig</span>
-          <span className="de text-[17px]">{result.expected}</span>
+          <span className="de text-[18px]">{result.expected}</span>
         </p>
       )}
 
-      {result.hint && <p className="text-[13px] leading-snug text-muted-foreground">{result.hint}</p>}
+      {result.hint && <p className="text-[15px] leading-snug text-muted-foreground">{result.hint}</p>}
 
       <ul className="flex flex-col gap-1.5">
         {question.rules.map((rule) => (
-          <li key={rule} className="flex gap-2.5 text-[13.5px] leading-snug">
-            <span aria-hidden className="select-none pt-[3px] text-[10px] text-muted-foreground">
+          <li key={rule} className="flex gap-2.5 text-[15px] leading-snug">
+            <span aria-hidden className="select-none pt-[3px] text-[12px] text-muted-foreground">
               §
             </span>
             <span>{rule}</span>
@@ -92,14 +92,14 @@ export function Correction({
       {question.revealGender && <GenderChip gender={question.revealGender} />}
 
       {question.example && (
-        <p className="flex flex-col gap-0.5 border-t border-rule pt-3 text-[13.5px]">
-          <span className="de text-[16px]">{question.example.de}</span>
+        <p className="flex flex-col gap-0.5 border-t border-rule pt-3 text-[15px]">
+          <span className="de text-[17px]">{question.example.de}</span>
           <span className="text-muted-foreground italic">{question.example.en}</span>
         </p>
       )}
 
       {question.note && (
-        <p className="border-t border-rule pt-3 text-[12.5px] leading-snug text-muted-foreground">
+        <p className="border-t border-rule pt-3 text-[14px] leading-snug text-muted-foreground">
           {question.note}
         </p>
       )}
