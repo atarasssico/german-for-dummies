@@ -16,16 +16,16 @@ import {
   KASUS, KASUS_LABEL, KASUS_QUESTION, adjEnding, determiner, determinerForm, nounForm, nounPhrase,
 } from '@/engine/grammar'
 import { withinLevel } from '@/engine/questions'
-import { GENDER_VAR } from '@/lib/gender'
+import { GENDER_VAR, genderTint } from '@/lib/gender'
 import { useProgress } from '@/store/progress'
 import { cn } from '@/lib/utils'
 
 const SLOTS: Slot[] = ['m', 'f', 'n', 'pl']
 
-const SLOT_HEAD: Record<Slot, { label: string; colour?: string }> = {
-  m: { label: 'maskulin', colour: GENDER_VAR.m },
-  f: { label: 'feminin', colour: GENDER_VAR.f },
-  n: { label: 'neutrum', colour: GENDER_VAR.n },
+const SLOT_HEAD: Record<Slot, { label: string; colour?: string; gender?: Gender }> = {
+  m: { label: 'maskulin', colour: GENDER_VAR.m, gender: 'm' },
+  f: { label: 'feminin', colour: GENDER_VAR.f, gender: 'f' },
+  n: { label: 'neutrum', colour: GENDER_VAR.n, gender: 'n' },
   pl: { label: 'Plural' },
 }
 
@@ -108,8 +108,11 @@ function GridTable({
               <th
                 key={slot}
                 scope="col"
-                className="pb-2 pr-3 text-[13px] font-medium uppercase tracking-[0.12em]"
-                style={{ color: SLOT_HEAD[slot].colour ?? 'var(--muted-foreground)' }}
+                className="px-2 pb-2 pt-1 text-[13px] font-semibold uppercase tracking-[0.1em]"
+                style={{
+                  color: SLOT_HEAD[slot].colour ?? 'var(--muted-foreground)',
+                  background: SLOT_HEAD[slot].gender ? genderTint(SLOT_HEAD[slot].gender, 24) : undefined,
+                }}
               >
                 {SLOT_HEAD[slot].label}
               </th>
@@ -124,7 +127,16 @@ function GridTable({
                 {row.sub && <span className="block text-[13px] text-muted-foreground">{row.sub}</span>}
               </th>
               {row.cells.map((cell, i) => (
-                <td key={i} className="de py-2.5 pr-3 align-baseline text-[18px]" style={{ color: SLOT_HEAD[SLOTS[i] as Slot].colour }}>
+                <td
+                  key={i}
+                  className="de px-2 py-2.5 align-baseline text-[18px]"
+                  style={{
+                    color: SLOT_HEAD[SLOTS[i] as Slot].colour,
+                    background: SLOT_HEAD[SLOTS[i] as Slot].gender
+                      ? genderTint(SLOT_HEAD[SLOTS[i] as Slot].gender, 9)
+                      : undefined,
+                  }}
+                >
                   {cell ?? '·'}
                 </td>
               ))}
@@ -275,7 +287,12 @@ function NounLookup() {
                 }}
                 className="flex min-h-[48px] w-full items-baseline gap-3 py-2.5 text-left hover:bg-secondary/60"
               >
-                <span className="de flex-1 text-[17px]" style={{ color: GENDER_VAR[n.gender] }}>
+                <span
+                  aria-hidden
+                  className="h-6 w-[5px] shrink-0"
+                  style={{ background: GENDER_VAR[n.gender] }}
+                />
+                <span className="de flex-1 text-[17px] font-semibold" style={{ color: GENDER_VAR[n.gender] }}>
                   {({ m: 'der', f: 'die', n: 'das' } as Record<Gender, string>)[n.gender]} {n.word}
                 </span>
                 <span className="text-[14px] text-foreground-soft">{n.en}</span>
@@ -285,7 +302,7 @@ function NounLookup() {
         </ul>
       )}
 
-      <Rail gender={target.gender} className="py-1">
+      <Rail gender={target.gender} tint={16} className="p-4">
         <p className="de text-[clamp(1.8rem,7vw,2.6rem)] leading-none" style={{ color: GENDER_VAR[target.gender] }}>
           {({ m: 'der', f: 'die', n: 'das' } as Record<Gender, string>)[target.gender]} {target.word}
         </p>

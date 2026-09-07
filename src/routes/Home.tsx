@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Table2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { GenderKey } from '@/components/Rail'
+import { GENDER_VAR } from '@/lib/gender'
 import { LedgerHead } from '@/components/Ledger'
 import { ProgressStrip } from '@/components/ProgressStrip'
 import { MODES, MODE_BLURB, MODE_LABEL, poolFor } from '@/engine/questions'
@@ -100,11 +101,19 @@ export function Home() {
                 to={`/ueben/${mode}`}
                 className="group flex min-h-[76px] items-center gap-4 py-4 transition-colors hover:bg-secondary/60"
               >
-                <span
-                  aria-hidden
-                  className="h-11 w-[3px] shrink-0 bg-rule-strong transition-opacity group-hover:opacity-100"
-                  style={{ opacity: 0.25 + 0.75 * summary.progress }}
-                />
+                {mode === 'articles' ? (
+                  <span aria-hidden className="flex h-11 w-[5px] shrink-0 flex-col">
+                    <span className="flex-1" style={{ background: GENDER_VAR.m }} />
+                    <span className="flex-1" style={{ background: GENDER_VAR.f }} />
+                    <span className="flex-1" style={{ background: GENDER_VAR.n }} />
+                  </span>
+                ) : (
+                  <span
+                    aria-hidden
+                    className="h-11 w-[5px] shrink-0 bg-rule-strong"
+                    style={{ opacity: 0.25 + 0.75 * summary.progress }}
+                  />
+                )}
                 <span className="flex min-w-0 flex-1 flex-col gap-1">
                   <span className="de text-[22px] font-semibold leading-none" lang="de">{MODE_LABEL[mode]}</span>
                   <span className="text-[15px] leading-relaxed text-foreground-soft">

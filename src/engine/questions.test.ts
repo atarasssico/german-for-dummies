@@ -245,6 +245,25 @@ describe('question content', () => {
     expect(q?.expects).toBe('Verbform + Präfix am Ende')
   })
 
+  it('never asks you to copy the prompt back', () => {
+    // Nominativ Singular with the definite article is the dictionary form that
+    // the card already shows, so it must not be generated as a task.
+    const settings = { ...ALL, includeAdjectives: false }
+    for (const id of poolFor('articles', settings)) {
+      const q = buildQuestion(id, settings)
+      if (!q || q.kind !== 'type' || !q.focusArticle) continue
+      const shown = `${q.focusArticle} ${q.focus}`
+      expect(q.answer.text, `${id} asks for the prompt itself`).not.toBe(shown)
+    }
+  })
+
+  it('falls back to the plural when the definite article is the only one enabled', () => {
+    const settings = { ...ALL, determiners: ['def'], includeAdjectives: false, usePlural: true }
+    const q = buildQuestion('decl:hose:nom', settings)
+    expect(q?.answer.text).toBe('die Hosen')
+    expect(q?.target).toBe('Nominativ Plural')
+  })
+
   it('returns null for an id that no longer resolves', () => {
     expect(buildQuestion('conj:doesnotexist:praesens:ich', ALL)).toBeNull()
     expect(buildQuestion('nonsense', ALL)).toBeNull()

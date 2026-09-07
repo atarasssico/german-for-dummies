@@ -7,11 +7,12 @@ import type { PrepGroup } from '@/data/prepositions'
 import { VERBS, verb as verbById } from '@/data/verbs'
 import { CONTRASTS, PATTERN_LABEL, VALENCY, VALENCY_BY_ID } from '@/data/valency'
 import type { Frame, Pattern } from '@/data/valency'
+import { shuffle } from './srs'
 import type { PersonKey, Tense, Verb } from './conjugate'
 import {
   PERSON_LABEL, TENSE_HINT, TENSE_LABEL, conjugate, partizip2, personsFor, praetBase, prefersWuerde,
 } from './conjugate'
-import type { Adjective, Gender, Kasus, Level, Noun, Numerus } from './grammar'
+import type { Adjective, Gender, Kasus, Level, Noun, Numerus, Phrase } from './grammar'
 import {
   KASUS, KASUS_LABEL, KASUS_QUESTION, adjEnding, adjPattern, availableDeterminers,
   determiner, determinerForm, nounForm, nounPhrase, slotOf,
@@ -299,13 +300,40 @@ function genderQuestion(n: Noun): Question {
   }
 }
 
+/**
+ * Picks a rendering that is actually a task. Several case/gender/determiner
+ * combinations produce the dictionary form the card already shows (die Hose in
+ * the accusative, das Kind in the nominative), which would ask you to copy the
+ * prompt back, so those are skipped in favour of one that changes something.
+ */
 function declensionQuestion(n: Noun, kasus: Kasus, s: GenSettings, rand: () => number): Question {
-  const wantsPlural = s.usePlural && n.plural !== '' && rand() < 0.35
-  const num: Numerus = wantsPlural ? 'pl' : 'sg'
-  const allowed = availableDeterminers(num).filter((d) => s.determiners.includes(d.id))
-  const det = (allowed.length ? pick(allowed, rand) : determiner('def')).id
+  const prompt = `${ARTICLE_LABEL[n.gender]} ${n.word}`
   const adj = s.includeAdjectives && rand() < 0.5 ? pick(ADJECTIVES, rand) : undefined
-  const phrase = nounPhrase(n, { det, kasus, num, adj })
+
+  const numbers: Numerus[] =
+    s.usePlural && n.plural ? (rand() < 0.35 ? ['pl', 'sg'] : ['sg', 'pl']) : ['sg']
+
+  type Candidate = { det: string; num: Numerus; phrase: Phrase }
+  let chosen: Candidate | null = null
+  let fallback: Candidate | null = null
+
+  for (const num of numbers) {
+    const ids = availableDeterminers(num)
+      .filter((d) => s.determiners.includes(d.id))
+      .map((d) => d.id)
+    const order = ids.length > 0 ? shuffle([...ids], rand) : ['def']
+    for (const det of order) {
+      const candidate: Candidate = { det, num, phrase: nounPhrase(n, { det, kasus, num, adj }) }
+      fallback ??= candidate
+      if (candidate.phrase.text !== prompt) {
+        chosen = candidate
+        break
+      }
+    }
+    if (chosen) break
+  }
+
+  const { det, num, phrase } = chosen ?? (fallback as Candidate)
   const slot = slotOf(n, num)
 
   const rules = [determinerRule(det, slot, kasus)]

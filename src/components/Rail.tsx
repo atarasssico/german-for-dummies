@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import type { Gender } from '@/engine/grammar'
-import { GENDER_ARTICLE, GENDER_NAME, GENDER_VAR } from '@/lib/gender'
+import { GENDER_ARTICLE, GENDER_NAME, GENDER_VAR, genderTint } from '@/lib/gender'
 import { cn } from '@/lib/utils'
 
 /**
@@ -12,19 +12,25 @@ export function Rail({
   gender,
   children,
   className,
+  tint = 0,
 }: {
   gender?: Gender
   children: ReactNode
   className?: string
+  /** Percentage of the gender hue washed over the page ground behind the block. */
+  tint?: number
 }) {
   return (
     <div
       className={cn('relative pl-4', className)}
-      style={{ ['--rail-color' as string]: gender ? GENDER_VAR[gender] : 'var(--rule-strong)' }}
+      style={{
+        ['--rail-color' as string]: gender ? GENDER_VAR[gender] : 'var(--rule-strong)',
+        ...(tint > 0 ? { background: genderTint(gender, tint) } : {}),
+      }}
     >
       <span
         aria-hidden
-        className="absolute left-0 top-0 bottom-0 w-[3px]"
+        className="absolute left-0 top-0 bottom-0 w-[5px]"
         style={{ background: 'var(--rail-color)' }}
       />
       {children}

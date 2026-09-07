@@ -2,6 +2,7 @@ import { Check, X } from 'lucide-react'
 import type { DiffPart, GradeResult } from '@/engine/grade'
 import type { Question } from '@/engine/questions'
 import { GenderChip } from '@/components/Rail'
+import { genderEdge, genderTint } from '@/lib/gender'
 import { cn } from '@/lib/utils'
 
 /**
@@ -46,12 +47,27 @@ export function Correction({
   return (
     <section
       aria-live="polite"
-      className={cn(
-        'flex flex-col gap-4 border-l-[3px] pl-4',
-        right ? 'border-rule-strong' : 'border-wrong',
-      )}
+      className={cn('flex flex-col gap-4 border-l-[5px] pl-4', right ? '' : 'border-wrong')}
+      style={
+        right && genderOf(question)
+          ? { borderColor: genderEdge(genderOf(question)) }
+          : right
+            ? { borderColor: 'var(--rule-strong)' }
+            : undefined
+      }
     >
-      <header className="flex items-baseline gap-2.5">
+      <header
+        className="flex items-baseline gap-2.5"
+        style={
+          right && genderOf(question)
+            ? {
+                background: genderTint(genderOf(question), 16),
+                padding: '0.85rem',
+                marginLeft: '-0.85rem',
+              }
+            : undefined
+        }
+      >
         {right ? (
           <Check className="mt-0.5 size-[18px] shrink-0" aria-hidden />
         ) : (
@@ -105,6 +121,10 @@ export function Correction({
       )}
     </section>
   )
+}
+
+function genderOf(question: Question) {
+  return question.gender ?? question.revealGender
 }
 
 function answerLabel(question: Question): string {

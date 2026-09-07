@@ -7,13 +7,13 @@ import { Rail } from '@/components/Rail'
 import { UmlautKeys } from '@/components/UmlautKeys'
 import type { GradeResult } from '@/engine/grade'
 import { grade } from '@/engine/grade'
-import type { Kasus } from '@/engine/grammar'
+import type { Gender, Kasus } from '@/engine/grammar'
 import { KASUS_LABEL } from '@/engine/grammar'
 import type { Mode, Question } from '@/engine/questions'
 import { MODES, MODE_LABEL, buildQuestion, poolFor } from '@/engine/questions'
 import { pickSession } from '@/engine/srs'
 import { useProgress } from '@/store/progress'
-import { GENDER_VAR } from '@/lib/gender'
+import { GENDER_VAR, genderEdge, genderTint } from '@/lib/gender'
 import { cn } from '@/lib/utils'
 
 type Phase = 'answering' | 'answered'
@@ -227,7 +227,7 @@ export function Session() {
         */}
         <div className="flex flex-col gap-2">
           {question.sourceLabel && <span className="eyebrow">{question.sourceLabel}</span>}
-          <Rail gender={question.gender}>
+          <Rail gender={question.gender} tint={question.gender ? 16 : 0} className="p-4">
             <p
               className={cn(
                 'de leading-none',
@@ -323,7 +323,8 @@ export function Session() {
               name="antwort"
               lang="de"
               placeholder="hier tippen…"
-              className="de w-full border-b-2 border-rule bg-transparent pb-2 text-[clamp(1.5rem,6vw,2.1rem)] leading-tight outline-none focus-visible:border-foreground focus-visible:bg-secondary/40 placeholder:text-muted-foreground/55"
+              style={question.gender ? { borderColor: genderEdge(question.gender) } : undefined}
+              className="de w-full border-b-2 border-rule bg-transparent pb-2 text-[clamp(1.5rem,6vw,2.1rem)] leading-tight outline-none placeholder:text-muted-foreground/55"
             />
             <div className="flex items-center justify-between gap-3">
               <UmlautKeys
@@ -354,16 +355,21 @@ export function Session() {
                 <button
                   type="button"
                   onClick={() => submit(choice.id)}
-                  className="flex min-h-[60px] w-full items-center gap-4 py-3 text-left transition-colors hover:bg-secondary/60"
+                  style={
+                    isGender(choice.id)
+                      ? { background: genderTint(choice.id, 14) }
+                      : undefined
+                  }
+                  className="flex min-h-[64px] w-full items-center gap-4 px-3 py-3 text-left transition-colors hover:bg-secondary/60"
                 >
                   <span
                     aria-hidden
-                    className="h-8 w-[3px] shrink-0"
-                    style={{ background: choiceColour(choice.id) }}
+                    className="h-9 w-[5px] shrink-0"
+                    style={{ background: choiceColour(choice.id) ?? 'var(--rule)' }}
                   />
                   <span className="flex min-w-0 flex-col gap-0.5">
                     <span
-                      className="de text-[23px] leading-none"
+                      className="de text-[24px] font-semibold leading-none"
                       style={{ color: choiceColour(choice.id) }}
                     >
                       {choice.label}
@@ -467,11 +473,12 @@ export function Session() {
   )
 }
 
+function isGender(id: string): id is Gender {
+  return id === 'm' || id === 'f' || id === 'n'
+}
+
 function choiceColour(id: string): string | undefined {
-  if (id === 'm') return GENDER_VAR.m
-  if (id === 'f') return GENDER_VAR.f
-  if (id === 'n') return GENDER_VAR.n
-  return undefined
+  return isGender(id) ? GENDER_VAR[id] : undefined
 }
 
 function formatPrepCase(prep: string, kasus: Kasus | null): string {

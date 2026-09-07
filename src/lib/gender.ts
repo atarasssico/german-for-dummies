@@ -27,6 +27,21 @@ export const GENDER_TEXT: Record<Gender, string> = {
 
 export const GENDERS: Gender[] = ['m', 'f', 'n']
 
+/**
+ * A wash of the gender hue over the page ground. Derived from the one hue with
+ * color-mix rather than stored as extra tokens, so there is still exactly one
+ * value per gender to change.
+ */
+export function genderTint(gender: Gender | undefined, percent: number): string {
+  const hue = gender ? GENDER_VAR[gender] : 'var(--rule-strong)'
+  return `color-mix(in srgb, ${hue} ${percent}%, var(--background))`
+}
+
+/** The hue at full strength, for borders and marks. */
+export function genderEdge(gender: Gender | undefined): string {
+  return gender ? GENDER_VAR[gender] : 'var(--rule-strong)'
+}
+
 /** Inline style for the `.rail` signature element. */
 export function railStyle(gender?: Gender): React.CSSProperties {
   return { '--rail-color': gender ? GENDER_VAR[gender] : 'var(--rule-strong)' } as React.CSSProperties
