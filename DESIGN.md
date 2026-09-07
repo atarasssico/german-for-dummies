@@ -19,14 +19,34 @@ Two systems, kept apart by hue and by role, so no colour has to be read twice.
 
 **Case is the primary system.** It appears on nearly every screen, so the case
 name is always written in its own colour and any surface belonging to a case is
-washed with it. Hues sit on axes the gender trio leaves free.
+washed with it. Hues sit on axes the gender trio leaves free, and are checked
+against each other as well: Genitiv started as plum and had to move to olive
+because plum and the feminine pink read as one colour, and Dativ moved from
+violet to purple for the same reason against the masculine blue. Seven
+categorical hues is near the limit of what stays legible, so every one is
+checked against the other six by CIE76 distance rather than by eye:
+
+| Pair | dE | |
+| --- | --- | --- |
+| Nominativ teal vs das green | 30.9 | the tightest pair, acceptable |
+| Genitiv olive vs das green | 32.2 | |
+| Dativ purple vs der blue | 33.0 | was 21.5 as violet |
+| Genitiv olive vs die pink | 60+ | was 27.4 as plum |
+
+Anything under about 25 reads as the same colour and has to move.
+
+The one knowing exception is the correction amber, which sits 22.6 from the
+Akkusativ orange. It is a state rather than a category, only ever appears as a
+border, a strike-through or an icon next to the word FALSCH, and never as a
+pill, so it cannot be mistaken for a case label. Every replacement searched for
+scored worse against the orange or came back near-black.
 
 | Token | Light | Dark | Means |
 | --- | --- | --- | --- |
 | `--kasus-nom` | `#0d5b66` | `#4fb3c4` | Nominativ |
 | `--kasus-akk` | `#94430f` | `#e08a52` | Akkusativ |
-| `--kasus-dat` | `#4e3a8e` | `#a48ce8` | Dativ |
-| `--kasus-gen` | `#7c2b6a` | `#dd7ac6` | Genitiv |
+| `--kasus-dat` | `#6f2d91` | `#cb9ae8` | Dativ |
+| `--kasus-gen` | `#4f5c15` | `#b9c95e` | Genitiv |
 
 **Gender is the secondary system** and only ever colours letters: the article,
 the noun, the rail beside them. So a coloured *word* is gender and a coloured
