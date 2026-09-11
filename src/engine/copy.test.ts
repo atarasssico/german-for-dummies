@@ -71,6 +71,21 @@ describe('interface copy', () => {
     expect(src).not.toContain('settings.level')
   })
 
+  it('does not restart a round by linking to the route already open', () => {
+    // "Neue Runde" was a Link to /ueben/:mode from inside /ueben/:mode. The
+    // router had nothing to navigate to, the queue effect never re-ran, and the
+    // button did nothing at all. Restarting is an action, not navigation.
+    const src = readFileSync('src/routes/Session.tsx', 'utf8')
+    expect(src).not.toMatch(/<Link to=\{`\/ueben\/\$\{mode\}`\}/)
+  })
+
+  it('waits for stored settings before dealing a round', () => {
+    // Loading a drill URL directly runs the queue effect before the provider
+    // has read localStorage, so the round used the default length and tenses.
+    const src = readFileSync('src/routes/Session.tsx', 'utf8')
+    expect(src).toMatch(/if \(!valid \|\| !ready\) return/)
+  })
+
   it('asks its questions in German', () => {
     const settings = { ...DEFAULT_SETTINGS, level: 'C1' as const }
     const leads = new Set<string>()

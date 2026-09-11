@@ -33,7 +33,7 @@ const CASE_OPTIONS: Kasus[] = ['akk', 'dat', 'gen']
 export function Session() {
   const { mode } = useParams<{ mode: string }>()
   const navigate = useNavigate()
-  const { settings, recordAnswer, setLastMode, progress } = useProgress()
+  const { settings, recordAnswer, setLastMode, progress, ready } = useProgress()
 
   const valid = MODES.includes(mode as Mode)
   const activeMode = mode as Mode
@@ -64,11 +64,12 @@ export function Session() {
     [],
   )
 
-  // Build the session once per mode. Re-picking on every render would reshuffle
-  // the queue underneath the person answering it.
-  useEffect(() => {
-    if (!valid) return
-    setLastMode(activeMode)
+  /**
+   * Deals a fresh round. Called on mount and by "Neue Runde", which cannot be a
+   * link: it points at the route you are already on, so the router would not
+   * remount anything and the button would do nothing at all.
+   */
+  const startRound = useCallback(() => {
     startQueue(
       pickSession({
         pool: poolFor(activeMode, settings),
@@ -76,8 +77,20 @@ export function Session() {
         count: settings.sessionLength,
       }),
     )
+    // progress.cards changes on every answer, and depending on it here would
+    // reshuffle the queue underneath the person answering it.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeMode, valid])
+  }, [activeMode, settings, startQueue])
+
+  // Wait for stored settings before dealing. Loading a drill URL directly runs
+  // this effect before the provider has read localStorage, and the round would
+  // silently use the default length, tenses and determiners instead of yours.
+  useEffect(() => {
+    if (!valid || !ready) return
+    setLastMode(activeMode)
+    startRound()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeMode, valid, ready])
 
   const cardId = queue[index]
   const question = useMemo<Question | null>(
@@ -168,7 +181,14 @@ export function Session() {
 
   const finished = index >= queue.length
   if (finished) {
-    return <SessionSummary mode={activeMode} log={log} onRetry={(ids) => startQueue(ids)} />
+    return (
+      <SessionSummary
+        mode={activeMode}
+        log={log}
+        onRetry={(ids) => startQueue(ids)}
+        onNewRound={startRound}
+      />
+    )
   }
 
   if (!question) {
@@ -558,10 +578,12 @@ function SessionSummary({
   mode,
   log,
   onRetry,
+  onNewRound,
 }: {
   mode: Mode
   log: LogEntry[]
   onRetry: (ids: string[]) => void
+  onNewRound: () => void
 }) {
   const wrong = log.filter((entry) => !entry.correct)
   const right = log.length - wrong.length
@@ -611,8 +633,13 @@ function SessionSummary({
             <RotateCcw className="size-4" aria-hidden />
           </Button>
         )}
-        <Button asChild variant={wrong.length > 0 ? 'outline' : 'default'} size="lg" className="h-12 px-5">
-          <Link to={`/ueben/${mode}`}>Neue Runde</Link>
+        <Button
+          onClick={onNewRound}
+          variant={wrong.length > 0 ? 'outline' : 'default'}
+          size="lg"
+          className="h-12 px-5"
+        >
+          Neue Runde
         </Button>
         <Button asChild variant="ghost" size="lg" className="h-12 px-5">
           <Link to="/">Zur Übersicht</Link>
