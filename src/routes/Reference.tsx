@@ -255,6 +255,14 @@ function AdjectiveTables() {
 
 /* ------------------------------------------------------------ noun lookup */
 
+/** 0 for an exact hit, 1 for a prefix, 2 for anything else. */
+function rank(word: string, query: string): number {
+  const w = word.toLowerCase()
+  if (w === query) return 0
+  if (w.startsWith(query)) return 1
+  return 2
+}
+
 function NounLookup() {
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState('kind')
@@ -262,16 +270,27 @@ function NounLookup() {
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return []
-    return NOUNS.filter((n) => n.word.toLowerCase().includes(q) || n.en.toLowerCase().includes(q)).slice(0, 8)
+    const hits = NOUNS.filter(
+      (n) => n.word.toLowerCase().includes(q) || n.en.toLowerCase().includes(q),
+    )
+    // Exact and prefix matches first, so typing "Herz" does not surface
+    // "Herzlichkeit" ahead of it.
+    hits.sort((a, b) => rank(a.word, q) - rank(b.word, q) || a.word.localeCompare(b.word, 'de'))
+    return hits
   }, [query])
 
-  const target = NOUNS.find((n) => n.id === selected) ?? nounById('kind')
+  // The table follows what you type. Requiring a click on a suggestion made the
+  // search look broken: the panel below just kept showing the previous word.
+  const target = matches[0] ?? NOUNS.find((n) => n.id === selected) ?? nounById('kind')
   const cell = (kasus: Kasus, num: Numerus) =>
     target.plural === '' && num === 'pl' ? null : nounPhrase(target, { det: 'def', kasus, num }).text
 
   return (
     <section className="flex flex-col gap-4">
-      <LedgerHead label="Substantiv nachsehen" right={`${NOUNS.length} Wörter`} />
+      <LedgerHead
+        label="Substantiv nachsehen"
+        right={query.trim() ? `${matches.length} von ${NOUNS.length}` : `${NOUNS.length} Wörter`}
+      />
 
       <label className="flex items-center gap-3 border-b border-rule pb-2">
         <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -287,9 +306,9 @@ function NounLookup() {
         />
       </label>
 
-      {matches.length > 0 && (
+      {matches.length > 1 && (
         <ul className="flex flex-col border-b border-rule">
-          {matches.map((n) => (
+          {matches.slice(0, 8).map((n) => (
             <li key={n.id} className="border-b border-rule last:border-b-0">
               <button
                 type="button"
@@ -312,6 +331,13 @@ function NounLookup() {
             </li>
           ))}
         </ul>
+      )}
+
+      {query.trim() && matches.length === 0 && (
+        <p className="border-l-[5px] border-wrong py-2 pl-3 text-[16px] leading-relaxed text-foreground-soft">
+          „{query.trim()}“ ist nicht dabei. The word list is curated rather than complete, so the
+          search only reaches the {NOUNS.length} nouns the app ships with.
+        </p>
       )}
 
       <Rail gender={target.gender} tint={16} className="p-4">
@@ -490,7 +516,7 @@ function VerbList() {
                   </span>
                   <span className="text-[16px] text-foreground-soft">{verb.en}</span>
                 </span>
-                <PrincipalParts verb={verb} className="block" />
+                <PrincipalParts verb={verb} />
                 <VerbFramesInline infinitive={verb.infinitive} />
               </span>
               <ChevronRight

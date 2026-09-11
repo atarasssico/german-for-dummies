@@ -31,6 +31,9 @@ export function Paradigm() {
   const [tense, setTense] = useState<Tense>('praesens')
   const [values, setValues] = useState<Partial<Record<PersonKey, string>>>({})
   const [results, setResults] = useState<Partial<Record<PersonKey, GradeResult>>>({})
+  /** Answers stay hidden until you ask, so a single slip does not end the round. */
+  const [revealed, setRevealed] = useState(false)
+  const [attempt, setAttempt] = useState(1)
   const cells = useRef<Partial<Record<PersonKey, HTMLInputElement | null>>>({})
   const [focused, setFocused] = useState<PersonKey | null>(null)
 
@@ -39,6 +42,8 @@ export function Paradigm() {
   useEffect(() => {
     setValues({})
     setResults({})
+    setRevealed(false)
+    setAttempt(1)
     cells.current[persons[0] as PersonKey]?.focus()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [verbId, tense])
@@ -49,6 +54,10 @@ export function Paradigm() {
   const rightCount = persons.filter((p) => results[p]?.verdict === 'correct').length
 
   const check = () => {
+    // React reuses the DOM node when the button row swaps branches, so a click
+    // on "Noch einmal" could turn that same element into the submit button
+    // mid-event and re-grade the cleared table. Guard rather than rely on it.
+    if (checked) return
     const next: Partial<Record<PersonKey, GradeResult>> = {}
     for (const person of persons) {
       const form = conjugate(verb, tense, person)
@@ -80,7 +89,22 @@ export function Paradigm() {
   const reset = () => {
     setValues({})
     setResults({})
+    setRevealed(false)
+    setAttempt(1)
     cells.current[persons[0] as PersonKey]?.focus()
+  }
+
+  /** Keeps what you got right, clears the rest, and lets you type again. */
+  const retryWrong = () => {
+    const keep: Partial<Record<PersonKey, string>> = {}
+    for (const person of persons) {
+      if (results[person]?.verdict === 'correct') keep[person] = values[person]
+    }
+    setValues(keep)
+    setResults({})
+    setAttempt((n) => n + 1)
+    const firstWrong = persons.find((person) => results[person]?.verdict !== 'correct')
+    requestAnimationFrame(() => cells.current[firstWrong ?? (persons[0] as PersonKey)]?.focus())
   }
 
   const nextVerb = () => {
@@ -100,17 +124,8 @@ export function Paradigm() {
         <div className="flex flex-col gap-2">
           <span className="eyebrow">Konjugation schreiben</span>
           <h1 className="de text-[clamp(2rem,9vw,3rem)] font-semibold leading-none" lang="de">{verb.infinitive}</h1>
-          <p className="text-[16px] text-foreground-soft">
-            {verb.en}
-            {verb.class !== 'weak' && (
-              <>
-                <span className="px-2 text-rule-strong">/</span>
-                <span className="de text-[17px]">
-                  {praetBase(verb)} · {verb.aux === 'sein' ? 'ist' : 'hat'} {partizip2(verb)}
-                </span>
-              </>
-            )}
-          </p>
+          <p className="text-[16px] text-foreground-soft">{verb.en}</p>
+          <StammFormen verb={verb} />
         </div>
         <div className="flex shrink-0 gap-1">
           <button
@@ -203,7 +218,7 @@ export function Paradigm() {
                       : 'border-rule',
                   )}
                 />
-                {checked && !right && (
+                {checked && !right && revealed && (
                   <span className="de text-[17px] font-semibold">{result?.expected}</span>
                 )}
               </div>
@@ -222,23 +237,53 @@ export function Paradigm() {
 
         <div className="flex flex-col gap-4 pt-5">
           {!checked ? (
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div key="answering" className="flex flex-wrap items-center justify-between gap-3">
               <UmlautKeys onInsert={insertChar} />
               <Button type="submit" size="lg" className="h-11 px-6">
-                Prüfen
+                {attempt > 1 ? 'Nochmal prüfen' : 'Prüfen'}
               </Button>
             </div>
           ) : (
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="de text-[20px] tabular">
-                {rightCount} <span className="text-muted-foreground">von {persons.length}</span>
-              </span>
-              <Button type="button" onClick={reset} size="lg" className="h-11 px-6">
-                Noch einmal
-              </Button>
-              <Button type="button" onClick={nextVerb} variant="outline" size="lg" className="h-11 px-5">
-                Nächstes Verb
-              </Button>
+            <div key="checked" className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="de text-[20px] tabular">
+                  {rightCount} <span className="text-foreground-soft">von {persons.length}</span>
+                </span>
+                {rightCount < persons.length && !revealed && (
+                  <>
+                    <Button type="button" onClick={retryWrong} size="lg" className="h-11 px-6">
+                      Die {persons.length - rightCount} nochmal
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => setRevealed(true)}
+                      variant="outline"
+                      size="lg"
+                      className="h-11 px-5"
+                    >
+                      Lösung zeigen
+                    </Button>
+                  </>
+                )}
+                <Button
+                  type="button"
+                  onClick={reset}
+                  variant={rightCount === persons.length || revealed ? 'default' : 'ghost'}
+                  size="lg"
+                  className="h-11 px-5"
+                >
+                  Von vorne
+                </Button>
+                <Button type="button" onClick={nextVerb} variant="outline" size="lg" className="h-11 px-5">
+                  Nächstes Verb
+                </Button>
+              </div>
+              {rightCount < persons.length && !revealed && (
+                <p className="text-[16px] leading-relaxed text-foreground-soft">
+                  Was richtig war, bleibt stehen. Der Rest ist leer, damit du es noch einmal
+                  versuchen kannst, ohne die Lösung zu sehen.
+                </p>
+              )}
             </div>
           )}
           <Button asChild variant="ghost" size="lg" className="h-11 w-full px-4 sm:w-fit sm:self-end">
@@ -317,13 +362,59 @@ function VerbPicker({ onPick }: { onPick: (id: string) => void }) {
   )
 }
 
+/**
+ * The Stammformen: the two forms every other tense is built from. They used to
+ * sit unlabelled next to the translation, where they read as a mysterious
+ * second and third verb.
+ */
+export function StammFormen({ verb, className }: { verb: Verb; className?: string }) {
+  const rows: Array<[string, string]> = [
+    ['Präteritum', `${verb.praetForms?.er ?? praetBase(verb)}`],
+    ['Perfekt', `${verb.aux === 'sein' ? 'ist' : 'hat'} ${partizip2(verb)}`],
+  ]
+  return (
+    <div className={cn('flex flex-col gap-1 pt-1', className)}>
+      <span className="eyebrow">
+        Stammformen{verb.class === 'weak' ? ' · regelmäßig' : ` · ${VERB_CLASS_LABEL[verb.class]}`}
+      </span>
+      <dl className="flex flex-wrap gap-x-5 gap-y-1">
+        {rows.map(([label, form]) => (
+          <div key={label} className="flex items-baseline gap-2">
+            <dt className="text-[15px] text-muted-foreground">{label}</dt>
+            <dd className="de text-[18px] font-semibold" lang="de">
+              {form}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )
+}
+
+const VERB_CLASS_LABEL: Record<Verb['class'], string> = {
+  weak: 'regelmäßig',
+  strong: 'starkes Verb',
+  mixed: 'gemischt',
+  modal: 'Modalverb',
+  irregular: 'unregelmäßig',
+}
+
+/** The same two forms on one line, for list rows. */
 export function PrincipalParts({ verb, className }: { verb: Verb; className?: string }) {
   if (verb.class === 'weak') {
     return <span className={cn('text-[16px] text-foreground-soft', className)}>regelmäßig</span>
   }
   return (
-    <span className={cn('de hidden text-[17px] text-foreground-soft sm:inline', className)}>
-      {praetBase(verb)} · {verb.aux === 'sein' ? 'ist' : 'hat'} {partizip2(verb)}
+    <span className={cn('flex flex-wrap items-baseline gap-x-3 text-[15px]', className)}>
+      <span className="text-muted-foreground">
+        Prät. <span className="de text-[17px] text-foreground-soft">{praetBase(verb)}</span>
+      </span>
+      <span className="text-muted-foreground">
+        Perf.{' '}
+        <span className="de text-[17px] text-foreground-soft">
+          {verb.aux === 'sein' ? 'ist' : 'hat'} {partizip2(verb)}
+        </span>
+      </span>
     </span>
   )
 }

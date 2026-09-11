@@ -56,18 +56,33 @@ export function KasusPill({ pill, className }: { pill: Pill; className?: string 
   )
 }
 
-/** One line of pills: what this verb governs, at a glance. */
+/**
+ * What the verb governs, with the meaning that frame carries. The English
+ * matters most here: halten von and halten für are the same verb and different
+ * words, so a pill on its own would say the case and hide the point.
+ */
 export function VerbFramesInline({ infinitive, className }: { infinitive: string; className?: string }) {
   const entries = valencyFor(infinitive)
   if (entries.length === 0) return null
-  const pills = entries.flatMap((entry) => entry.frames.flatMap(pillsOf))
-  const seen = new Set<string>()
-  const unique = pills.filter((p) => (seen.has(p.label) ? false : (seen.add(p.label), true)))
+
+  const rows = entries.flatMap((entry) =>
+    entry.frames.map((frame) => ({
+      pills: pillsOf(frame),
+      // A single-frame verb has no per-frame sense, and its meaning is already
+      // printed beside the infinitive, so repeating it would be noise.
+      sense: frame.sense ?? (entry.frames.length > 1 ? entry.en : null),
+    })),
+  )
 
   return (
-    <span className={cn('flex flex-wrap items-center gap-1', className)}>
-      {unique.map((pill) => (
-        <KasusPill key={pill.label} pill={pill} />
+    <span className={cn('flex flex-col gap-1', className)}>
+      {rows.map((row, i) => (
+        <span key={i} className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          {row.pills.map((pill) => (
+            <KasusPill key={pill.label} pill={pill} />
+          ))}
+          {row.sense && <span className="text-[15px] text-foreground-soft">{row.sense}</span>}
+        </span>
       ))}
     </span>
   )
