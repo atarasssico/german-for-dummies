@@ -126,12 +126,14 @@ npm run icons      # regenerate the PWA icons from geometry
 
 ## Why these counts
 
-The datasets are curated, not exhaustive. German has thousands of verbs; this
-has 228, chosen to cover what the trainers need:
+The datasets are curated, not exhaustive. German has thousands of verbs; this has 366, chosen to cover what the trainers
+need. The split matters more than the total: an irregular verb has to be
+recorded because its forms cannot be derived, while a weak verb is generated
+from its infinitive alone.
 
 | | Count | What it is |
 | --- | --- | --- |
-| Verbs | 228 | 3 auxiliaries, 6 modals, 140 strong, 11 mixed, 68 weak. Every strong verb in the common ablaut classes, the separables built on them, and the weak verbs the valency and drill examples rely on |
+| Verbs | 366 | 160 irregular (3 auxiliaries, 6 modals, 140 strong, 11 mixed) and 206 weak. German has roughly 170 to 200 strong and irregular verbs in ordinary use, so that half is close to complete; the weak half is a large sample rather than a list, since weak verbs are fully predictable and cost one line each |
 | Nouns | 285 | Across 14 topics, weighted to A1 and A2, including the 17 weak masculines and the Name/Herz oddities |
 | Prepositions | 47 | All of them worth knowing: 8 accusative, 14 dative, 9 two-way, 16 genitive |
 | Valency entries | 116 | 145 frames, of which 24 are verbs whose meaning changes with the frame |
