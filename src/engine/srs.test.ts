@@ -45,15 +45,15 @@ describe('pickSession', () => {
       b: { box: 1, due: NOW - 1 * DAY, reps: 1, lapses: 0, last: 0 },
       c: { box: 3, due: NOW + 4 * DAY, reps: 3, lapses: 0, last: 0 },
     }
-    const session = pickSession({ pool, states, count: 5, now: NOW, random: () => 0 })
+    const session = pickSession({ pool, states, count: 5, now: NOW })
     expect(session.slice(0, 2)).toEqual(['a', 'b'])
-    // unseen items come next, ahead of cards that are not due yet
-    expect(session.slice(2, 4).sort()).toEqual(['d', 'e'])
+    // unseen items come next, in pool order, which is commonest first
+    expect(session.slice(2, 4)).toEqual(['d', 'e'])
     expect(session[4]).toBe('c')
   })
 
   it('respects the requested size', () => {
-    const session = pickSession({ pool, states: {}, count: 3, now: NOW, random: () => 0 })
+    const session = pickSession({ pool, states: {}, count: 3, now: NOW })
     expect(session).toHaveLength(3)
     expect(new Set(session).size).toBe(3)
   })
@@ -113,5 +113,23 @@ describe('summary numbers a person reads', () => {
     const s = summarise(pool, { 'card-0': card }, NOW)
     expect(s.strengthOfSeen).toBe(1)
     expect(s.progress).toBeCloseTo(1 / pool.length, 6)
+  })
+})
+
+
+describe('teaching order', () => {
+  it('introduces unseen cards in pool order rather than at random', () => {
+    // The pool arrives commonest first, so a first session must not reshuffle it.
+    const pool = ['zeit', 'jahr', 'mann', 'zeuge', 'automat']
+    for (let i = 0; i < 20; i++) {
+      expect(pickSession({ pool, states: {}, count: 3, now: NOW })).toEqual(['zeit', 'jahr', 'mann'])
+    }
+  })
+
+  it('still puts overdue cards ahead of new ones', () => {
+    const states = { zeuge: { box: 1, due: NOW - DAY, reps: 1, lapses: 0, last: 0 } }
+    const session = pickSession({ pool: ['zeit', 'jahr', 'zeuge'], states, count: 3, now: NOW })
+    expect(session[0]).toBe('zeuge')
+    expect(session.slice(1)).toEqual(['zeit', 'jahr'])
   })
 })

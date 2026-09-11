@@ -45,13 +45,11 @@ export function strength(state: CardState | undefined): number {
 }
 
 export interface PickOptions {
-  /** Every item the current settings allow, in a stable order. */
+  /** Every item the current settings allow, commonest first. */
   pool: string[]
   states: Record<string, CardState | undefined>
   count: number
   now?: number
-  /** Deterministic shuffling, for tests. */
-  random?: () => number
 }
 
 /**
@@ -59,7 +57,7 @@ export interface PickOptions {
  * unseen items, then whatever is closest to falling due. Weak cards are
  * favoured over strong ones so a session is not padded with things you know.
  */
-export function pickSession({ pool, states, count, now = Date.now(), random = Math.random }: PickOptions): string[] {
+export function pickSession({ pool, states, count, now = Date.now() }: PickOptions): string[] {
   const due: string[] = []
   const fresh: string[] = []
   const rest: string[] = []
@@ -73,7 +71,8 @@ export function pickSession({ pool, states, count, now = Date.now(), random = Ma
 
   due.sort((a, b) => (states[a]?.due ?? 0) - (states[b]?.due ?? 0))
   rest.sort((a, b) => (states[a]?.due ?? 0) - (states[b]?.due ?? 0))
-  shuffle(fresh, random)
+  // Unseen cards keep pool order, which is commonest first. Shuffling them
+  // introduced rare words as readily as everyday ones.
 
   return [...due, ...fresh, ...rest].slice(0, count)
 }

@@ -126,20 +126,26 @@ npm run icons      # regenerate the PWA icons from geometry
 
 ## Why these counts
 
-The datasets are curated, not exhaustive. German has thousands of verbs; this has 366, chosen to cover what the trainers
+The datasets are curated, not exhaustive. German has thousands of verbs; this has 377, chosen to cover what the trainers
 need. The split matters more than the total: an irregular verb has to be
 recorded because its forms cannot be derived, while a weak verb is generated
 from its infinitive alone.
 
 | | Count | What it is |
 | --- | --- | --- |
-| Verbs | 366 | 160 irregular (3 auxiliaries, 6 modals, 140 strong, 11 mixed) and 206 weak. German has roughly 170 to 200 strong and irregular verbs in ordinary use, so that half is close to complete; the weak half is a large sample rather than a list, since weak verbs are fully predictable and cost one line each |
-| Nouns | 285 | Across 14 topics, weighted to A1 and A2, including the 17 weak masculines and the Name/Herz oddities |
+| Verbs | 377 | 160 irregular (3 auxiliaries, 6 modals, 140 strong, 11 mixed) and 206 weak. German has roughly 170 to 200 strong and irregular verbs in ordinary use, so that half is close to complete; the weak half is a large sample rather than a list, since weak verbs are fully predictable and cost one line each |
+| Nouns | 308 | Across 14 topics, weighted to A1 and A2, including the 17 weak masculines and the Name/Herz oddities |
 | Prepositions | 47 | All of them worth knowing: 8 accusative, 14 dative, 9 two-way, 16 genitive |
 | Valency entries | 116 | 145 frames, of which 24 are verbs whose meaning changes with the frame |
 
-Level tags (A1 to C1) exist to size a practice session, and they cap the drill
-pools through Settings. They do **not** filter the reference tables: those show
+Level tags (A1 to C1) do two jobs. They cap the drill pools through Settings,
+and they set **teaching order**: pools are sorted commonest first, and a session
+introduces unseen cards in that order rather than at random, so a first session
+opens on Mann, Frau, Kind and sein, haben, werden rather than on Zeuge and
+Automat. The tag is a frequency proxy, checked against standard frequency lists
+for the top few hundred words rather than derived from a corpus.
+
+They They do **not** filter the reference tables: those show
 everything, with their own visible filters, because looking a word up is not
 the same as practising it.
 

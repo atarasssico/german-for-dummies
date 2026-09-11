@@ -360,6 +360,32 @@ const ROWS: Row[] = [
   ['Recht', 'n', 'Rechte', 'right, law', 'abstract', { level: 'B1' }],
   ['Krieg', 'm', 'Kriege', 'war', 'abstract', { level: 'B1' }],
   ['Frieden', 'm', '', 'peace', 'abstract', { level: 'B1' }],
+
+  // ------------------------------------- high frequency, added for coverage
+  // These sit in the top few hundred words of ordinary German and were missing.
+  ['Teil', 'm', 'Teile', 'part', 'abstract', { level: 'A2' }],
+  ['Fall', 'm', 'Fälle', 'case, instance', 'abstract', { level: 'B1' }],
+  ['Seite', 'f', 'Seiten', 'side, page', 'abstract', { level: 'A1' }],
+  ['Mal', 'n', 'Male', 'time, occasion', 'time', { level: 'A1' }],
+  ['Ende', 'n', 'Enden', 'end', 'time', { level: 'A1' }],
+  ['Anfang', 'm', 'Anfänge', 'beginning', 'time', { level: 'A1' }],
+  ['Familie', 'f', 'Familien', 'family', 'people', { level: 'A1' }],
+  ['Gruppe', 'f', 'Gruppen', 'group', 'people', { level: 'A2' }],
+  ['Punkt', 'm', 'Punkte', 'point, dot', 'abstract', { level: 'A2' }],
+  ['Art', 'f', 'Arten', 'kind, way, species', 'abstract', { level: 'B1' }],
+  ['Form', 'f', 'Formen', 'form, shape', 'abstract', { level: 'A2' }],
+  ['Sinn', 'm', 'Sinne', 'sense, meaning', 'abstract', { level: 'B1' }],
+  ['Wert', 'm', 'Werte', 'value', 'abstract', { level: 'B1' }],
+  ['Zahl', 'f', 'Zahlen', 'number, figure', 'abstract', { level: 'A1' }],
+  ['Nummer', 'f', 'Nummern', 'number (of a thing)', 'abstract', { level: 'A1' }],
+  ['Kraft', 'f', 'Kräfte', 'strength, force', 'abstract', { level: 'B1' }],
+  ['Raum', 'm', 'Räume', 'room, space', 'home', { level: 'A2' }],
+  ['Stelle', 'f', 'Stellen', 'place, position, job', 'work', { level: 'A2' }],
+  ['Thema', 'n', 'Themen', 'topic', 'study', { level: 'A2' }],
+  ['Ergebnis', 'n', 'Ergebnisse', 'result', 'work', { level: 'B1' }],
+  ['Bereich', 'm', 'Bereiche', 'area, field', 'abstract', { level: 'B2' }],
+  ['Gesellschaft', 'f', 'Gesellschaften', 'society, company', 'abstract', { level: 'B2' }],
+  ['Entwicklung', 'f', 'Entwicklungen', 'development', 'abstract', { level: 'B1' }],
 ]
 
 export const NOUNS: Noun[] = ROWS.map(([word, gender, plural, en, topic, extra]) => ({

@@ -156,14 +156,26 @@ const ARTICLE_LABEL: Record<Gender, string> = { m: 'der', f: 'die', n: 'das' }
 
 // ---------------------------------------------------------------------- pools
 
+/**
+ * Pools come out in teaching order, commonest first, because that order decides
+ * which unseen cards a session introduces. Shuffling them meant a first session
+ * could hand you Zeuge or Automat before Zeit or Jahr. The level tag is the
+ * frequency proxy: A1 words are the ones you meet first in the language.
+ */
+function byLevel<T extends { level: Level }>(items: T[]): T[] {
+  return [...items].sort((a, b) => LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level))
+}
+
 export function nounPool(s: GenSettings): Noun[] {
-  return NOUNS.filter(
-    (n) => withinLevel(n.level, s.level) && (s.topics.length === 0 || s.topics.includes(n.topic)),
+  return byLevel(
+    NOUNS.filter(
+      (n) => withinLevel(n.level, s.level) && (s.topics.length === 0 || s.topics.includes(n.topic)),
+    ),
   )
 }
 
 export function verbPool(s: GenSettings): Verb[] {
-  return VERBS.filter((v) => withinLevel(v.level, s.level))
+  return byLevel(VERBS.filter((v) => withinLevel(v.level, s.level)))
 }
 
 export function poolFor(mode: Mode, s: GenSettings): string[] {
@@ -187,7 +199,7 @@ export function poolFor(mode: Mode, s: GenSettings): string[] {
     }
     case 'valency': {
       const ids: string[] = []
-      for (const v of VALENCY) {
+      for (const v of byLevel(VALENCY)) {
         if (!withinLevel(v.level, s.level)) continue
         v.frames.forEach((frame, i) => {
           ids.push(frame.pattern === 'prep' ? `valprep:${v.id}:${i}` : `valcase:${v.id}:${i}`)
@@ -197,7 +209,7 @@ export function poolFor(mode: Mode, s: GenSettings): string[] {
       return ids
     }
     case 'prepositions': {
-      const preps = PREPOSITIONS.filter((p) => withinLevel(p.level, s.level))
+      const preps = byLevel(PREPOSITIONS.filter((p) => withinLevel(p.level, s.level)))
       return [
         ...preps.map((p) => `prepgroup:${p.id}`),
         ...WECHSEL.filter((p) => withinLevel(p.level, s.level)).flatMap((p) => [

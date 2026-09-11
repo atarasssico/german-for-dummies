@@ -457,6 +457,19 @@ export const VERBS: Verb[] = [
   { id: 'auspacken', infinitive: 'auspacken', sep: 'aus', aux: 'haben', class: 'weak', en: 'to unpack', level: 'A2' },
   { id: 'mitmachen', infinitive: 'mitmachen', sep: 'mit', aux: 'haben', class: 'weak', en: 'to join in', level: 'A2' },
   { id: 'weitermachen', infinitive: 'weitermachen', sep: 'weiter', aux: 'haben', class: 'weak', en: 'to carry on', level: 'A2' },
+
+  // ------------------------------------- high frequency, added for coverage
+  { id: 'versuchen', infinitive: 'versuchen', insep: true, aux: 'haben', class: 'weak', en: 'to try', level: 'A2' },
+  { id: 'erreichen', infinitive: 'erreichen', insep: true, aux: 'haben', class: 'weak', en: 'to reach, to achieve', level: 'B1' },
+  { id: 'handeln', infinitive: 'handeln', aux: 'haben', class: 'weak', en: 'to act, to trade', level: 'B1' },
+  { id: 'bilden', infinitive: 'bilden', aux: 'haben', class: 'weak', en: 'to form, to educate', level: 'B1' },
+  { id: 'verwenden', infinitive: 'verwenden', insep: true, aux: 'haben', class: 'weak', en: 'to use', level: 'B1', note: 'Also has the older strong-ish forms verwandte / verwandt.' },
+  { id: 'bestehen', infinitive: 'bestehen', insep: true, aux: 'haben', class: 'strong', en: 'to exist, to insist, to pass', level: 'B1', praet: 'bestand', partizip2: 'bestanden', konj2: 'bestünde' },
+  { id: 'entstehen', infinitive: 'entstehen', insep: true, aux: 'sein', class: 'strong', en: 'to arise, to come about', level: 'B2', praet: 'entstand', partizip2: 'entstanden', konj2: 'entstünde' },
+  { id: 'erhalten', infinitive: 'erhalten', insep: true, aux: 'haben', class: 'strong', en: 'to receive, to preserve', level: 'B1', present: { du: 'erhältst', er: 'erhält' }, praet: 'erhielt', partizip2: 'erhalten' },
+  { id: 'erscheinen', infinitive: 'erscheinen', insep: true, aux: 'sein', class: 'strong', en: 'to appear', level: 'B1', praet: 'erschien', partizip2: 'erschienen' },
+  { id: 'beschreiben', infinitive: 'beschreiben', insep: true, aux: 'haben', class: 'strong', en: 'to describe', level: 'B1', praet: 'beschrieb', partizip2: 'beschrieben' },
+  { id: 'erkennen', infinitive: 'erkennen', insep: true, aux: 'haben', class: 'mixed', en: 'to recognise', level: 'B1', praet: 'erkannte', partizip2: 'erkannt', konj2: 'erkennte' },
 ]
 
 export const VERB_BY_ID = new Map(VERBS.map((v) => [v.id, v]))
