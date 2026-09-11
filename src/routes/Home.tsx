@@ -111,7 +111,7 @@ export function Home() {
                   <span
                     aria-hidden
                     className="h-11 w-[5px] shrink-0 bg-rule-strong"
-                    style={{ opacity: 0.25 + 0.75 * summary.progress }}
+                    style={{ opacity: summary.seen === 0 ? 0.2 : 0.35 + 0.65 * summary.strengthOfSeen }}
                   />
                 )}
                 <span className="flex min-w-0 flex-1 flex-col gap-1">
@@ -124,8 +124,14 @@ export function Home() {
                   <span className="text-[20px] leading-none tabular">
                     {summary.due.toLocaleString('de-DE')}
                   </span>
+                  {/*
+                    Not a percentage of the deck: one answer is worth 0.01% of
+                    1,420 cards, so a whole session rounded to 0% and looked
+                    broken. Both of these move on the first answer.
+                  */}
                   <span className="text-[15px] uppercase tracking-[0.1em] text-muted-foreground tabular">
-                    {Math.round(summary.progress * 100)} % gelernt
+                    {summary.seen.toLocaleString('de-DE')} begonnen
+                    {summary.known > 0 && ` · ${summary.known.toLocaleString('de-DE')} sicher`}
                   </span>
                 </span>
                 <ArrowRight

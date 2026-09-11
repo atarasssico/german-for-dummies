@@ -77,3 +77,41 @@ describe('summarise', () => {
     expect(summarise([], {}, NOW).progress).toBe(0)
   })
 })
+
+describe('summary numbers a person reads', () => {
+  const pool = Array.from({ length: 1420 }, (_, i) => `card-${i}`)
+
+  it('moves on the very first answer', () => {
+    const one = summarise(pool, { 'card-0': review(undefined, true, NOW) }, NOW)
+    expect(one.seen).toBe(1)
+    // the whole-deck percentage cannot show this, which is why it is not displayed
+    expect(Math.round(one.progress * 100)).toBe(0)
+  })
+
+  it('counts a full session, where the percentage still rounds to zero', () => {
+    const states: Record<string, CardState> = {}
+    for (const id of pool.slice(0, 12)) states[id] = review(undefined, true, NOW)
+    const s = summarise(pool, states, NOW)
+    expect(s.seen).toBe(12)
+    expect(Math.round(s.progress * 100)).toBe(0)
+    expect(s.strengthOfSeen).toBeCloseTo(1 / MAX_BOX, 5)
+  })
+
+  it('counts a card as known once it reaches box 4', () => {
+    let card = newCard(NOW)
+    for (let i = 0; i < 3; i++) card = review(card, true, NOW)
+    expect(summarise(['a'], { a: card }, NOW).known).toBe(0)
+    card = review(card, true, NOW)
+    expect(card.box).toBe(4)
+    expect(summarise(['a'], { a: card }, NOW).known).toBe(1)
+    expect(summarise(['a'], { a: card }, NOW).mastered).toBe(0)
+  })
+
+  it('reports strength among started cards, not across the whole deck', () => {
+    let card = newCard(NOW)
+    for (let i = 0; i < MAX_BOX; i++) card = review(card, true, NOW)
+    const s = summarise(pool, { 'card-0': card }, NOW)
+    expect(s.strengthOfSeen).toBe(1)
+    expect(s.progress).toBeCloseTo(1 / pool.length, 6)
+  })
+})

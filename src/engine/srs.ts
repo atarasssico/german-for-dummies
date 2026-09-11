@@ -93,17 +93,32 @@ export { shuffle }
 
 export interface DeckSummary {
   total: number
+  /** Cards answered at least once. Moves on your very first answer. */
   seen: number
   due: number
+  /** Cards parked in the last box, which takes six correct reviews. */
   mastered: number
-  /** Mean strength across the whole pool, counting unseen items as zero. */
+  /** Cards at box 4 or better, roughly "this one has stuck". */
+  known: number
+  /**
+   * Mean strength across the whole pool, counting unseen items as zero. Honest
+   * but too coarse to show: with a 1,420 card deck one answer moves it by
+   * 0.01%, so a whole session still rounds to 0%. Use seen and known for
+   * anything a person reads.
+   */
   progress: number
+  /** Mean strength among the cards you have actually started. */
+  strengthOfSeen: number
 }
+
+/** Box 4 means an eight day interval, which is where a card starts feeling learned. */
+const KNOWN_BOX = 4
 
 export function summarise(pool: string[], states: Record<string, CardState | undefined>, now = Date.now()): DeckSummary {
   let seen = 0
   let due = 0
   let mastered = 0
+  let known = 0
   let total = 0
   for (const id of pool) {
     const state = states[id]
@@ -111,6 +126,7 @@ export function summarise(pool: string[], states: Record<string, CardState | und
       seen++
       if (state.due <= now) due++
       if (state.box >= MAX_BOX) mastered++
+      if (state.box >= KNOWN_BOX) known++
       total += strength(state)
     } else {
       due++
@@ -121,7 +137,9 @@ export function summarise(pool: string[], states: Record<string, CardState | und
     seen,
     due,
     mastered,
+    known,
     progress: pool.length ? total / pool.length : 0,
+    strengthOfSeen: seen ? total / seen : 0,
   }
 }
 
